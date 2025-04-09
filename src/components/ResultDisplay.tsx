@@ -15,7 +15,7 @@ const ResultDisplay = ({ resultText }) => {
       navigator.clipboard.writeText(resultText);
       setCopied(true);
       toast({
-        title: "Text copied to clipboard",
+        title: "Analysis copied to clipboard",
         duration: 2000,
       });
 
@@ -30,14 +30,14 @@ const ResultDisplay = ({ resultText }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "job-offer-analysis.txt";
+    a.download = "travel-contract-analysis.txt";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
     toast({
-      title: "Analysis downloaded",
+      title: "Contract analysis downloaded",
       duration: 2000,
     });
   };
@@ -45,7 +45,7 @@ const ResultDisplay = ({ resultText }) => {
   return (
     <Card className="w-full shadow-lg bg-black text-white border-gray-800 mt-8">
       <CardHeader className="bg-black border-b border-gray-800 flex flex-row justify-between items-center p-4">
-        <CardTitle className="text-xl font-bold text-white">Analysis Result</CardTitle>
+        <CardTitle className="text-xl font-bold text-white">Contract Analysis</CardTitle>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 

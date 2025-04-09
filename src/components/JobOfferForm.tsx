@@ -18,7 +18,8 @@ import {
   FormControl, 
   FormField, 
   FormItem, 
-  FormLabel 
+  FormLabel,
+  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
@@ -55,7 +56,7 @@ const JobOfferForm = ({
   return (
     <Card className="w-full shadow-lg bg-black text-white border-gray-800">
       <CardHeader className="bg-black border-b border-gray-800">
-        <CardTitle className="text-xl font-bold text-white">Job Offer {index}</CardTitle>
+        <CardTitle className="text-xl font-bold text-white">Travel Contract Destination {index}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...form}>
@@ -65,17 +66,20 @@ const JobOfferForm = ({
               name="salary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium text-base">Weekly Salary (USD)</FormLabel>
+                  <FormLabel className="text-white font-medium text-base">Estimated Weekly Pay (Total package)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
-                      placeholder="Enter weekly salary" 
+                      placeholder="Enter weekly pay amount" 
                       value={formData.salary} 
                       onChange={(e) => handleChange("salary", e.target.value)}
                       className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white"
                       disabled={disabled}
                     />
                   </FormControl>
+                  <FormDescription className="text-gray-400 text-sm">
+                    Total package: base pay + stipends.
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -85,7 +89,7 @@ const JobOfferForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium text-base">State</FormLabel>
+                  <FormLabel className="text-white font-medium text-base">Contract Location (City or State)</FormLabel>
                   <Select
                     disabled={disabled}
                     value={formData.state}
@@ -93,7 +97,7 @@ const JobOfferForm = ({
                   >
                     <FormControl>
                       <SelectTrigger className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white">
-                        <SelectValue placeholder="Select state" />
+                        <SelectValue placeholder="Select location" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-black border-gray-700 text-white">
@@ -104,6 +108,9 @@ const JobOfferForm = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormDescription className="text-gray-400 text-sm">
+                    Enter city or state — we'll handle taxes and cost of living.
+                  </FormDescription>
                 </FormItem>
               )}
             />
