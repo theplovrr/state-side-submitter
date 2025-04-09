@@ -53,44 +53,26 @@ const JobOfferForm = ({
   };
 
   return (
-    <Card className="w-full shadow-md bg-white border-gray-200">
-      <CardHeader className="bg-gray-50 border-b border-gray-200">
-        <CardTitle className="text-xl font-bold">Job Offer {index}</CardTitle>
+    <Card className="w-full shadow-lg bg-black text-white border-gray-800">
+      <CardHeader className="bg-black border-b border-gray-800">
+        <CardTitle className="text-xl font-bold text-white">Job Offer {index}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...form}>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <FormField
               control={form.control}
-              name="company"
+              name="salary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">Company Name</FormLabel>
+                  <FormLabel className="text-white font-medium text-base">Weekly Salary (USD)</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Enter company name" 
-                      value={formData.company} 
-                      onChange={(e) => handleChange("company", e.target.value)}
-                      className="border-gray-300 focus:border-black focus:ring-black"
-                      disabled={disabled}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">Position Title</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter position title" 
-                      value={formData.position} 
-                      onChange={(e) => handleChange("position", e.target.value)}
-                      className="border-gray-300 focus:border-black focus:ring-black"
+                      type="number" 
+                      placeholder="Enter weekly salary" 
+                      value={formData.salary} 
+                      onChange={(e) => handleChange("salary", e.target.value)}
+                      className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white"
                       disabled={disabled}
                     />
                   </FormControl>
@@ -103,88 +85,23 @@ const JobOfferForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">State</FormLabel>
+                  <FormLabel className="text-white font-medium text-base">State</FormLabel>
                   <Select
                     disabled={disabled}
                     value={formData.state}
                     onValueChange={(value) => handleChange("state", value)}
                   >
                     <FormControl>
-                      <SelectTrigger className="border-gray-300 focus:border-black focus:ring-black">
+                      <SelectTrigger className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white">
                         <SelectValue placeholder="Select state" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-black border-gray-700 text-white">
                       {states.map((state) => (
-                        <SelectItem key={state} value={state}>
+                        <SelectItem key={state} value={state} className="focus:bg-gray-800 focus:text-white">
                           {state}
                         </SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="salary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">Annual Salary (USD)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="Enter annual salary" 
-                      value={formData.salary} 
-                      onChange={(e) => handleChange("salary", e.target.value)}
-                      className="border-gray-300 focus:border-black focus:ring-black"
-                      disabled={disabled}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="benefits"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">Benefits</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Health insurance, retirement, etc." 
-                      value={formData.benefits} 
-                      onChange={(e) => handleChange("benefits", e.target.value)}
-                      className="border-gray-300 focus:border-black focus:ring-black"
-                      disabled={disabled}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="remote"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">Remote Work Options</FormLabel>
-                  <Select
-                    disabled={disabled}
-                    value={formData.remote}
-                    onValueChange={(value) => handleChange("remote", value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-gray-300 focus:border-black focus:ring-black">
-                        <SelectValue placeholder="Select option" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="fully_remote">Fully Remote</SelectItem>
-                      <SelectItem value="hybrid">Hybrid</SelectItem>
-                      <SelectItem value="in_office">In Office</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormItem>

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
 import JobOfferForm from "@/components/JobOfferForm";
 import ResultDisplay from "@/components/ResultDisplay";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
@@ -14,38 +13,29 @@ const Index = () => {
   const [resultText, setResultText] = useState("");
   
   const [offer1, setOffer1] = useState({
-    company: "",
-    position: "",
     state: "",
     salary: "",
-    benefits: "",
-    remote: "",
   });
   
   const [offer2, setOffer2] = useState({
-    company: "",
-    position: "",
     state: "",
     salary: "",
-    benefits: "",
-    remote: "",
   });
 
   const validateOffers = () => {
-    // Required fields: company, position, state, salary
-    if (!offer1.company || !offer1.position || !offer1.state || !offer1.salary) {
+    if (!offer1.state || !offer1.salary) {
       toast({
         title: "Missing information",
-        description: "Please complete all required fields for Job Offer 1",
+        description: "Please complete both fields for Job Offer 1",
         variant: "destructive",
       });
       return false;
     }
     
-    if (!offer2.company || !offer2.position || !offer2.state || !offer2.salary) {
+    if (!offer2.state || !offer2.salary) {
       toast({
         title: "Missing information",
-        description: "Please complete all required fields for Job Offer 2",
+        description: "Please complete both fields for Job Offer 2",
         variant: "destructive",
       });
       return false;
@@ -80,21 +70,13 @@ const Index = () => {
 
   const handleReset = () => {
     setOffer1({
-      company: "",
-      position: "",
       state: "",
       salary: "",
-      benefits: "",
-      remote: "",
     });
     
     setOffer2({
-      company: "",
-      position: "",
       state: "",
       salary: "",
-      benefits: "",
-      remote: "",
     });
     
     setResultText("");
@@ -102,18 +84,18 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-10 px-4 max-w-5xl">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Job Offer Comparison Tool</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Compare job offers from two different states and get a detailed analysis to help with your decision.
+    <div className="min-h-screen bg-gray-900">
+      <div className="container mx-auto py-10 px-4 max-w-4xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight mb-3 text-white">Job Offer Comparison</h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Compare weekly salaries between two different states and get a detailed analysis to help with your decision.
           </p>
         </div>
 
         {step === 1 ? (
           <>
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-10">
               <JobOfferForm 
                 index={1} 
                 formData={offer1} 
@@ -130,7 +112,7 @@ const Index = () => {
               <Button 
                 onClick={handleCompare} 
                 disabled={isAnalyzing}
-                className="bg-black hover:bg-gray-800 text-white py-2 px-8 rounded-md"
+                className="bg-white hover:bg-gray-200 text-black py-2 px-10 rounded-md text-base font-medium"
               >
                 {isAnalyzing ? "Analyzing..." : "Compare Offers"}
               </Button>
@@ -159,7 +141,7 @@ const Index = () => {
               <Button 
                 onClick={handleReset}
                 variant="outline"
-                className="border-gray-300 hover:bg-gray-100"
+                className="border-gray-700 hover:bg-gray-800 text-white"
               >
                 Start New Comparison
               </Button>

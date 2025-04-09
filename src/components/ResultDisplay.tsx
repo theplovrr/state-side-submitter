@@ -2,7 +2,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Download, Copy, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -44,15 +43,15 @@ const ResultDisplay = ({ resultText }) => {
   };
 
   return (
-    <Card className="w-full shadow-md bg-white border-gray-200 mt-8">
-      <CardHeader className="bg-gray-50 border-b border-gray-200 flex flex-row justify-between items-center p-4">
-        <CardTitle className="text-xl font-bold">Analysis Result</CardTitle>
+    <Card className="w-full shadow-lg bg-black text-white border-gray-800 mt-8">
+      <CardHeader className="bg-black border-b border-gray-800 flex flex-row justify-between items-center p-4">
+        <CardTitle className="text-xl font-bold text-white">Analysis Result</CardTitle>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={handleCopy}
-            className="border-gray-300 hover:bg-gray-100"
+            className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
             <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
@@ -61,7 +60,7 @@ const ResultDisplay = ({ resultText }) => {
             variant="outline" 
             size="sm" 
             onClick={handleDownload}
-            className="border-gray-300 hover:bg-gray-100"
+            className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
           >
             <Download size={16} />
             <span className="ml-2">Download</span>
@@ -71,7 +70,7 @@ const ResultDisplay = ({ resultText }) => {
       <CardContent className="p-6">
         <div 
           ref={textRef}
-          className="whitespace-pre-wrap font-mono text-sm bg-gray-50 p-4 rounded border border-gray-200 max-h-[400px] overflow-y-auto"
+          className="whitespace-pre-wrap font-mono text-sm bg-gray-900 p-6 rounded border border-gray-700 max-h-[500px] overflow-y-auto text-white"
         >
           {resultText}
         </div>

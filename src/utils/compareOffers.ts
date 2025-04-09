@@ -1,58 +1,45 @@
 
 interface JobOffer {
-  company: string;
-  position: string;
   state: string;
   salary: string;
-  benefits: string;
-  remote: string;
 }
 
-const formatRemoteOption = (option: string): string => {
-  switch (option) {
-    case "fully_remote":
-      return "Fully Remote";
-    case "hybrid":
-      return "Hybrid";
-    case "in_office":
-      return "In Office";
-    default:
-      return "Not specified";
-  }
-};
-
 export const compareOffers = (offer1: JobOffer, offer2: JobOffer): string => {
-  const salary1 = parseFloat(offer1.salary) || 0;
-  const salary2 = parseFloat(offer2.salary) || 0;
+  const weeklySalary1 = parseFloat(offer1.salary) || 0;
+  const weeklySalary2 = parseFloat(offer2.salary) || 0;
+  
+  // Calculate annual salary (weekly * 52)
+  const annualSalary1 = weeklySalary1 * 52;
+  const annualSalary2 = weeklySalary2 * 52;
 
   const offerReport = `JOB OFFER COMPARISON REPORT
 =============================
 
-OFFER 1: ${offer1.position} at ${offer1.company}
+OFFER 1
 ------------------------------
 Location: ${offer1.state}
-Annual Salary: $${salary1.toLocaleString()}
-Benefits: ${offer1.benefits || "Not specified"}
-Work Format: ${formatRemoteOption(offer1.remote)}
+Weekly Salary: $${weeklySalary1.toLocaleString()}
+Annual Salary: $${annualSalary1.toLocaleString()}
 
-OFFER 2: ${offer2.position} at ${offer2.company}
+OFFER 2
 ------------------------------
 Location: ${offer2.state}
-Annual Salary: $${salary2.toLocaleString()}
-Benefits: ${offer2.benefits || "Not specified"}
-Work Format: ${formatRemoteOption(offer2.remote)}
+Weekly Salary: $${weeklySalary2.toLocaleString()}
+Annual Salary: $${annualSalary2.toLocaleString()}
 
 COMPARISON SUMMARY
 ------------------------------
-Salary Difference: $${Math.abs(salary1 - salary2).toLocaleString()} ${
-    salary1 > salary2
-      ? `(${offer1.company} offers more)`
-      : salary2 > salary1
-      ? `(${offer2.company} offers more)`
+Weekly Salary Difference: $${Math.abs(weeklySalary1 - weeklySalary2).toLocaleString()} ${
+    weeklySalary1 > weeklySalary2
+      ? `(Offer 1 pays more)`
+      : weeklySalary2 > weeklySalary1
+      ? `(Offer 2 pays more)`
       : "(Equal offers)"
   }
 
-State Difference: ${offer1.state === offer2.state ? "Same state" : "Different states"}
+Annual Salary Difference: $${Math.abs(annualSalary1 - annualSalary2).toLocaleString()}
+
+State Comparison: ${offer1.state} vs. ${offer2.state}
 ${
   offer1.state !== offer2.state
     ? `- Consider cost of living differences between ${offer1.state} and ${offer2.state}`
@@ -64,19 +51,15 @@ ${
     : ""
 }
 
-Remote Work Comparison: 
-- ${offer1.company}: ${formatRemoteOption(offer1.remote)}
-- ${offer2.company}: ${formatRemoteOption(offer2.remote)}
-
 ADDITIONAL CONSIDERATIONS
 ------------------------------
 - Research the cost of living in each location
-- Consider career growth opportunities at each company
-- Evaluate work-life balance and company culture
-- Factor in commute time if applicable
-- Assess job security and company stability
-- Consider potential relocation costs if applicable
-- Evaluate additional perks not reflected in base salary
+- Consider state income tax rates (some states have no income tax)
+- Factor in housing costs in each state
+- Evaluate healthcare costs in each state
+- Consider climate preferences and quality of life
+- Research job market stability in each state
+- Factor in potential relocation costs if applicable
 
 Report generated on: ${new Date().toLocaleDateString()}
 `;
