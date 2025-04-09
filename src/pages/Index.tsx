@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -30,6 +31,26 @@ const states = [
   "West Virginia", "Wisconsin", "Wyoming"
 ];
 
+// Example cities for autocomplete
+const majorCities = [
+  "New York City", "Los Angeles", "Chicago", "Houston", "Phoenix", 
+  "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
+  "Austin", "Jacksonville", "Fort Worth", "Columbus", "Indianapolis",
+  "Charlotte", "San Francisco", "Seattle", "Denver", "Washington DC",
+  "Boston", "El Paso", "Nashville", "Detroit", "Portland",
+  "Las Vegas", "Oklahoma City", "Memphis", "Louisville", "Baltimore",
+  "Milwaukee", "Albuquerque", "Tucson", "Fresno", "Sacramento",
+  "Kansas City", "Long Beach", "Mesa", "Atlanta", "Colorado Springs",
+  "Raleigh", "Omaha", "Miami", "Tampa", "Minneapolis",
+  "New Orleans", "Cleveland", "Honolulu", "Arlington", "Bakersfield"
+];
+
+// Combined locations with type indicators
+const locations = [
+  ...states.map(state => ({ name: state, type: "state" })),
+  ...majorCities.map(city => ({ name: city, type: "city" }))
+];
+
 const Index = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -54,7 +75,7 @@ const Index = () => {
     if (!homeState) {
       toast({
         title: "Missing information",
-        description: "Please select your home state",
+        description: "Please select your home city or state",
         variant: "destructive",
       });
       return false;
@@ -156,17 +177,18 @@ const Index = () => {
                   name="homeState"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white font-medium text-base">Home State</FormLabel>
+                      <FormLabel className="text-white font-medium text-base">Home City or State</FormLabel>
                       <FormControl>
                         <TypeaheadInput
                           value={homeState}
                           onChange={setHomeState}
-                          options={states}
-                          placeholder="Type to search your home state..."
+                          options={locations}
+                          placeholder="Enter your home city or state..."
+                          allowFreeText={true}
                         />
                       </FormControl>
                       <FormDescription className="text-gray-400 text-sm">
-                        We'll adjust your taxes based on your home state.
+                        We'll adjust your taxes based on your home location.
                       </FormDescription>
                     </FormItem>
                   )}
@@ -214,7 +236,7 @@ const Index = () => {
         {step === 3 && (
           <>
             <div className="bg-black border border-gray-800 rounded-lg p-4 mb-8">
-              <p className="text-white"><strong>Home State:</strong> {homeState}</p>
+              <p className="text-white"><strong>Home Location:</strong> {homeState}</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
