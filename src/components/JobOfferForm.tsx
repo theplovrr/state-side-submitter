@@ -7,13 +7,6 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { 
   Form, 
   FormControl, 
   FormField, 
@@ -23,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import TypeaheadInput from "./TypeaheadInput";
 
 // List of all US states
 const states = [
@@ -36,6 +30,26 @@ const states = [
   "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", 
   "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", 
   "West Virginia", "Wisconsin", "Wyoming"
+];
+
+// Example cities for demonstration
+const majorCities = [
+  "New York City", "Los Angeles", "Chicago", "Houston", "Phoenix", 
+  "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
+  "Austin", "Jacksonville", "Fort Worth", "Columbus", "Indianapolis",
+  "Charlotte", "San Francisco", "Seattle", "Denver", "Washington DC",
+  "Boston", "El Paso", "Nashville", "Detroit", "Portland",
+  "Las Vegas", "Oklahoma City", "Memphis", "Louisville", "Baltimore",
+  "Milwaukee", "Albuquerque", "Tucson", "Fresno", "Sacramento",
+  "Kansas City", "Long Beach", "Mesa", "Atlanta", "Colorado Springs",
+  "Raleigh", "Omaha", "Miami", "Tampa", "Minneapolis",
+  "New Orleans", "Cleveland", "Honolulu", "Arlington", "Bakersfield"
+];
+
+// Combined locations with type indicators
+const locations = [
+  ...states.map(state => ({ name: state, type: "state" })),
+  ...majorCities.map(city => ({ name: city, type: "city" }))
 ];
 
 const JobOfferForm = ({ 
@@ -94,24 +108,16 @@ const JobOfferForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white font-medium text-base">Contract Location (City or State)</FormLabel>
-                  <Select
-                    disabled={disabled}
-                    value={formData.state}
-                    onValueChange={(value) => handleChange("state", value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white">
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-black border-gray-700 text-white">
-                      {states.map((state) => (
-                        <SelectItem key={state} value={state} className="focus:bg-gray-800 focus:text-white">
-                          {state}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <TypeaheadInput
+                      value={formData.state}
+                      onChange={(value) => handleChange("state", value)}
+                      options={locations}
+                      placeholder="Type to search locations..."
+                      disabled={disabled}
+                      allowFreeText={true}
+                    />
+                  </FormControl>
                   <FormDescription className="text-gray-400 text-sm">
                     Enter city or state — we'll handle taxes and cost of living.
                   </FormDescription>

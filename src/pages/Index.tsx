@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -6,13 +5,6 @@ import JobOfferForm from "@/components/JobOfferForm";
 import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
 import { 
   Form, 
   FormControl, 
@@ -23,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
+import TypeaheadInput from "@/components/TypeaheadInput";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
@@ -164,23 +157,14 @@ const Index = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white font-medium text-base">Home State</FormLabel>
-                      <Select
-                        value={homeState}
-                        onValueChange={setHomeState}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white">
-                            <SelectValue placeholder="Select your home state" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-black border-gray-700 text-white">
-                          {states.map((state) => (
-                            <SelectItem key={state} value={state} className="focus:bg-gray-800 focus:text-white">
-                              {state}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <TypeaheadInput
+                          value={homeState}
+                          onChange={setHomeState}
+                          options={states}
+                          placeholder="Type to search your home state..."
+                        />
+                      </FormControl>
                       <FormDescription className="text-gray-400 text-sm">
                         We'll adjust your taxes based on your home state.
                       </FormDescription>
