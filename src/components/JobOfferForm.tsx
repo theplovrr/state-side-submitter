@@ -42,7 +42,8 @@ const JobOfferForm = ({
   index, 
   formData, 
   setFormData, 
-  disabled = false 
+  disabled = false,
+  optional = false
 }) => {
   const form = useForm({
     defaultValues: formData
@@ -56,7 +57,10 @@ const JobOfferForm = ({
   return (
     <Card className="w-full shadow-lg bg-black text-white border-gray-800">
       <CardHeader className="bg-black border-b border-gray-800">
-        <CardTitle className="text-xl font-bold text-white">Travel Contract Destination {index}</CardTitle>
+        <CardTitle className="text-xl font-bold text-white flex items-center justify-between">
+          <span>Travel Contract Destination {index}</span>
+          {optional && <span className="text-gray-400 text-sm font-normal">(Optional)</span>}
+        </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...form}>

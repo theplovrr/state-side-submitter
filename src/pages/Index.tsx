@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -19,6 +20,7 @@ import {
   FormLabel,
   FormDescription
 } from "@/components/ui/form";
+import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 
 // List of all US states
@@ -64,19 +66,14 @@ const Index = () => {
       return false;
     }
     
-    if (!offer1.state || !offer1.salary) {
-      toast({
-        title: "Missing information",
-        description: "Please complete both fields for Travel Contract Destination 1",
-        variant: "destructive",
-      });
-      return false;
-    }
+    // Check if at least one contract destination has valid data
+    const offer1Valid = offer1.state && offer1.salary;
+    const offer2Valid = offer2.state && offer2.salary;
     
-    if (!offer2.state || !offer2.salary) {
+    if (!offer1Valid && !offer2Valid) {
       toast({
         title: "Missing information",
-        description: "Please complete both fields for Travel Contract Destination 2",
+        description: "Please complete at least one travel contract destination",
         variant: "destructive",
       });
       return false;
@@ -92,7 +89,7 @@ const Index = () => {
     
     // Simulate processing delay for better UX
     setTimeout(() => {
-      const result = compareOffers(offer1, offer2);
+      const result = compareOffers(offer1, offer2, homeState);
       setResultText(result);
       setStep(2);
       setIsAnalyzing(false);
@@ -131,6 +128,15 @@ const Index = () => {
           <p className="text-gray-400 max-w-2xl mx-auto mb-6">
             See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
           </p>
+          
+          {/* Progress indicator */}
+          <div className="max-w-md mx-auto mb-8">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <span className={step === 1 ? "font-bold text-white" : ""}>Step 1: Enter Contracts</span>
+              <span className={step === 2 ? "font-bold text-white" : ""}>Step 2: See Your Results</span>
+            </div>
+            <Progress value={step === 1 ? 50 : 100} className="h-2" />
+          </div>
           
           {step === 1 && (
             <div className="max-w-md mx-auto mb-8">
@@ -181,6 +187,7 @@ const Index = () => {
                 index={2} 
                 formData={offer2} 
                 setFormData={setOffer2} 
+                optional={true}
               />
             </div>
             
@@ -190,7 +197,7 @@ const Index = () => {
                 disabled={isAnalyzing}
                 className="bg-white hover:bg-gray-200 text-black py-2 px-10 rounded-md text-base font-medium"
               >
-                {isAnalyzing ? "Analyzing..." : "Compare Contracts"}
+                {isAnalyzing ? "Analyzing..." : "Analyze Contracts"}
               </Button>
             </div>
           </>
@@ -201,18 +208,22 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <JobOfferForm 
-                index={1} 
-                formData={offer1} 
-                setFormData={setOffer1} 
-                disabled={true}
-              />
-              <JobOfferForm 
-                index={2} 
-                formData={offer2} 
-                setFormData={setOffer2} 
-                disabled={true}
-              />
+              {offer1.state && offer1.salary && (
+                <JobOfferForm 
+                  index={1} 
+                  formData={offer1} 
+                  setFormData={setOffer1} 
+                  disabled={true}
+                />
+              )}
+              {offer2.state && offer2.salary && (
+                <JobOfferForm 
+                  index={2} 
+                  formData={offer2} 
+                  setFormData={setOffer2} 
+                  disabled={true}
+                />
+              )}
             </div>
             
             <ResultDisplay resultText={resultText} />
