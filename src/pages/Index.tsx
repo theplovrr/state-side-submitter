@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -129,12 +128,8 @@ const Index = () => {
             Plovrr: Travel Nurse Take-Home Pay & Tax Estimator
           </h1>
           
-          <p className="text-gray-400 max-w-2xl mx-auto mb-2">
-            See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
-          </p>
-          
           <p className="text-gray-400 max-w-2xl mx-auto mb-6">
-            By nurses, for nurses. Simplify your travel contracts with Plovrr.
+            See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
           </p>
           
           {step === 1 && (
