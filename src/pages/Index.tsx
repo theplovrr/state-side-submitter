@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
 import JobOfferForm from "@/components/JobOfferForm";
 import ResultDisplay from "@/components/ResultDisplay";
+import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
 import { 
   Select, 
@@ -41,6 +43,7 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [resultText, setResultText] = useState("");
   const [homeState, setHomeState] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   
   const form = useForm();
   
@@ -82,14 +85,26 @@ const Index = () => {
   const handleCompare = () => {
     if (!validateOffers()) return;
     
+    // Move to email capture step
+    setStep(2);
+  };
+
+  const handleEmailSubmit = (email: string) => {
+    setUserEmail(email);
     setIsAnalyzing(true);
     
+    // Simulate analysis delay
     setTimeout(() => {
-      const result = compareOffers(offer1, offer2, homeState);
+      // Gather all valid offers
+      const validOffers = [];
+      if (offer1.state && offer1.salary) validOffers.push(offer1);
+      if (offer2.state && offer2.salary) validOffers.push(offer2);
+      
+      const result = compareOffers(validOffers, homeState, email);
       setResultText(JSON.stringify(result));
-      setStep(2);
+      setStep(3);
       setIsAnalyzing(false);
-    }, 1500);
+    }, 2000); // 2 second delay for better UX
   };
 
   const handleReset = () => {
@@ -105,7 +120,14 @@ const Index = () => {
     });
     
     setResultText("");
+    setUserEmail("");
     setStep(1);
+  };
+
+  const getProgressValue = () => {
+    if (step === 1) return 33;
+    if (step === 2) return 66;
+    return 100;
   };
 
   return (
@@ -127,9 +149,10 @@ const Index = () => {
           <div className="max-w-md mx-auto mb-8">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span className={step === 1 ? "font-bold text-white" : ""}>Step 1: Enter Contracts</span>
-              <span className={step === 2 ? "font-bold text-white" : ""}>Step 2: See Your Results</span>
+              <span className={step === 2 ? "font-bold text-white" : ""}>Step 2: Verify Email</span>
+              <span className={step === 3 ? "font-bold text-white" : ""}>Step 3: See Results</span>
             </div>
-            <Progress value={step === 1 ? 50 : 100} className="h-2" />
+            <Progress value={getProgressValue()} className="h-2" />
           </div>
           
           {step === 1 && (
@@ -169,7 +192,7 @@ const Index = () => {
           )}
         </div>
 
-        {step === 1 ? (
+        {step === 1 && (
           <>
             <div className="grid md:grid-cols-2 gap-8 mb-10">
               <JobOfferForm 
@@ -191,11 +214,20 @@ const Index = () => {
                 disabled={isAnalyzing}
                 className="bg-white hover:bg-gray-200 text-black py-2 px-10 rounded-md text-base font-medium"
               >
-                {isAnalyzing ? "Analyzing..." : "Analyze Contracts"}
+                Compare Destinations
               </Button>
             </div>
           </>
-        ) : (
+        )}
+
+        {step === 2 && (
+          <EmailCaptureForm 
+            onSubmit={handleEmailSubmit} 
+            isLoading={isAnalyzing} 
+          />
+        )}
+        
+        {step === 3 && (
           <>
             <div className="bg-black border border-gray-800 rounded-lg p-4 mb-8">
               <p className="text-white"><strong>Home State:</strong> {homeState}</p>
