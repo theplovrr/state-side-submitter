@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -23,7 +22,6 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 
-// List of all US states
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
   "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", 
@@ -66,7 +64,6 @@ const Index = () => {
       return false;
     }
     
-    // Check if at least one contract destination has valid data
     const offer1Valid = offer1.state && offer1.salary;
     const offer2Valid = offer2.state && offer2.salary;
     
@@ -87,10 +84,9 @@ const Index = () => {
     
     setIsAnalyzing(true);
     
-    // Simulate processing delay for better UX
     setTimeout(() => {
       const result = compareOffers(offer1, offer2, homeState);
-      setResultText(result);
+      setResultText(JSON.stringify(result));
       setStep(2);
       setIsAnalyzing(false);
     }, 1500);
@@ -116,7 +112,6 @@ const Index = () => {
     <div className="min-h-screen bg-gray-900">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center mb-10">
-          {/* Logo placeholder - replace with actual logo component/image */}
           <div className="flex justify-center mb-4">
             <img src="/plovrr-logo.png" alt="Plovrr Logo" className="h-16" />
           </div>
@@ -129,7 +124,6 @@ const Index = () => {
             See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
           </p>
           
-          {/* Progress indicator */}
           <div className="max-w-md mx-auto mb-8">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span className={step === 1 ? "font-bold text-white" : ""}>Step 1: Enter Contracts</span>
