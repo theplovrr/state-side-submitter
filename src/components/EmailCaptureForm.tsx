@@ -31,7 +31,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
 
   return (
     <div className="max-w-md mx-auto relative">
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-24 h-24 pointer-events-none animate-fade-in">
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 pointer-events-none animate-fade-in">
         <img 
           src="/lovable-uploads/bird-suitcase.png" 
           alt="Bird with suitcase" 
@@ -39,15 +39,15 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
         />
       </div>
 
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-black mb-3">Get Your Personalized Take-Home Pay & Tax Breakdown</h2>
+      <div className="text-center mb-5">
+        <h2 className="text-2xl font-bold text-black mb-2">Get Your Personalized Take-Home Pay & Tax Breakdown</h2>
         <p className="text-gray-600">
           Enter your email to unlock your estimated take-home pay and tax details for your contracts.
         </p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
@@ -66,11 +66,11 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
             )}
           />
 
-          <div className="pt-2 relative">
+          <div className="pt-1 relative">
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-4 h-12"
+              className="w-full bg-white hover:bg-gray-50 text-black border border-gray-200 font-medium py-3 px-4 h-12 rounded-md transition-colors"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
@@ -82,7 +82,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
               )}
             </Button>
             
-            <div className="absolute -bottom-24 right-0 w-20 h-20 pointer-events-none animate-fade-in">
+            <div className="absolute -bottom-20 right-0 w-20 h-20 pointer-events-none animate-fade-in">
               <img 
                 src="/lovable-uploads/bird-travel.png" 
                 alt="Bird with travel bags" 
