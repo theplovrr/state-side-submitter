@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -186,7 +187,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
             <img src="/lovable-uploads/90d7f47e-c8a6-4248-ab41-5ef50eb89b7c.png" alt="Plovrr Logo" className="h-12" />
           </div>
@@ -195,7 +196,7 @@ const Index = () => {
             Travel Nurse Take-Home Pay & Tax Estimator
           </h1>
           
-          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
+          <p className="text-gray-600 max-w-2xl mx-auto mb-6 font-medium">
             See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
           </p>
         </div>
@@ -294,10 +295,12 @@ const Index = () => {
         )}
 
         {step === 2 && (
-          <EmailCaptureForm 
-            onSubmit={handleEmailSubmit} 
-            isLoading={isAnalyzing} 
-          />
+          <div className="py-8 px-6 md:px-10 bg-[#111] text-white rounded-xl">
+            <EmailCaptureForm 
+              onSubmit={handleEmailSubmit} 
+              isLoading={isAnalyzing} 
+            />
+          </div>
         )}
         
         {step === 3 && (
