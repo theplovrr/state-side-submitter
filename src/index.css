@@ -33,7 +33,7 @@
     --input: 0 0% 89%;
     --ring: 0 0% 89%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 }
 
@@ -43,12 +43,12 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-black;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium tracking-tight;
+    @apply font-bold tracking-tight text-black;
   }
   
   input, select {
@@ -57,5 +57,25 @@
   
   ::selection {
     @apply bg-black/10 text-black;
+  }
+  
+  .button-primary {
+    @apply bg-white hover:bg-gray-50 text-black border border-black py-2 px-10 rounded-md text-base font-medium h-11 transition-colors;
+  }
+  
+  .button-outline {
+    @apply border border-gray-300 hover:bg-gray-50 text-black rounded-md px-4 py-2 text-base font-medium h-11 transition-colors;
+  }
+  
+  .input-field {
+    @apply border-[#E5E7EB] bg-white text-black focus:border-black focus:ring-black h-11 rounded-lg;
+  }
+  
+  .section-spacing {
+    @apply mb-6;
+  }
+  
+  .field-spacing {
+    @apply mb-4;
   }
 }

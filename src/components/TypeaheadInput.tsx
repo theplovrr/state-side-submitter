@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -29,7 +28,6 @@ const TypeaheadInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Filter options based on input value
   useEffect(() => {
     if (!inputValue.trim()) {
       setFilteredOptions([]);
@@ -45,7 +43,6 @@ const TypeaheadInput = ({
         option.name.toLowerCase().includes(inputValue.toLowerCase())
       );
       
-      // Sort with states first, then cities
       filtered.sort((a, b) => {
         if (a.type === 'state' && b.type !== 'state') return -1;
         if (a.type !== 'state' && b.type === 'state') return 1;
@@ -57,11 +54,9 @@ const TypeaheadInput = ({
       );
     }
 
-    // Limit to first 8 results for performance
     setFilteredOptions(filtered.slice(0, 8));
   }, [inputValue, options]);
 
-  // Close suggestions on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -106,7 +101,7 @@ const TypeaheadInput = ({
   return (
     <div className="relative w-full">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 h-4 w-4 text-[#9CA3AF]" />
         <Input
           ref={inputRef}
           type="text"
@@ -116,7 +111,7 @@ const TypeaheadInput = ({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            "pl-9 border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white pr-8",
+            "pl-9 border-[#E5E7EB] bg-white text-black focus:border-black focus:ring-black pr-8 h-11 placeholder:text-[#9CA3AF]",
             className
           )}
         />
@@ -124,7 +119,7 @@ const TypeaheadInput = ({
           <button 
             type="button" 
             onClick={handleClear}
-            className="absolute right-3 text-gray-400 hover:text-white"
+            className="absolute right-3 text-[#9CA3AF] hover:text-black"
           >
             <X className="h-4 w-4" />
           </button>
@@ -134,7 +129,7 @@ const TypeaheadInput = ({
       {showSuggestions && filteredOptions.length > 0 && (
         <div 
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-black border border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-sm max-h-60 overflow-auto"
         >
           {filteredOptions.map((option, index) => {
             const isString = typeof option === 'string';
@@ -144,12 +139,12 @@ const TypeaheadInput = ({
             return (
               <div
                 key={index}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-800 flex justify-between items-center"
+                className="px-4 py-2 cursor-pointer hover:bg-[#F3F4F6] flex justify-between items-center"
                 onClick={() => handleSelectOption(option)}
               >
                 <span>{optionValue}</span>
                 {optionType && (
-                  <span className="text-xs text-gray-400 ml-2">
+                  <span className="text-xs text-[#6B7280] ml-2">
                     ({optionType})
                   </span>
                 )}

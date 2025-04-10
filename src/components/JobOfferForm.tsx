@@ -70,11 +70,11 @@ const JobOfferForm = ({
   };
 
   return (
-    <Card className="w-full shadow-lg bg-black text-white border-gray-800">
-      <CardHeader className="bg-black border-b border-gray-800">
-        <CardTitle className="text-xl font-bold text-white flex items-center justify-between">
+    <Card className="w-full shadow-sm bg-white text-black border border-[#E5E7EB] rounded-xl">
+      <CardHeader className="bg-white border-b border-[#E5E7EB]">
+        <CardTitle className="text-xl font-bold text-black flex items-center justify-between">
           <span>Travel Contract Destination {index}</span>
-          {optional && <span className="text-gray-400 text-sm font-normal">(Optional)</span>}
+          {optional && <span className="text-[#6B7280] text-sm font-normal">(Optional)</span>}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
@@ -85,18 +85,18 @@ const JobOfferForm = ({
               name="salary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium text-base">Estimated Weekly Pay (Total package)</FormLabel>
+                  <FormLabel className="text-black font-medium text-base">Estimated Weekly Pay (Total package)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
                       placeholder="Enter weekly pay amount" 
                       value={formData.salary} 
                       onChange={(e) => handleChange("salary", e.target.value)}
-                      className="border-gray-700 bg-gray-900 text-white focus:border-white focus:ring-white"
+                      className="border-[#E5E7EB] bg-white text-black focus:border-black focus:ring-black h-11"
                       disabled={disabled}
                     />
                   </FormControl>
-                  <FormDescription className="text-gray-400 text-sm">
+                  <FormDescription className="text-[#6B7280] text-sm">
                     Total package: base pay + stipends.
                   </FormDescription>
                 </FormItem>
@@ -108,7 +108,7 @@ const JobOfferForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium text-base">Contract Location</FormLabel>
+                  <FormLabel className="text-black font-medium text-base">Contract Location</FormLabel>
                   <FormControl>
                     <TypeaheadInput
                       value={formData.state}
@@ -119,7 +119,7 @@ const JobOfferForm = ({
                       allowFreeText={true}
                     />
                   </FormControl>
-                  <FormDescription className="text-gray-400 text-sm">
+                  <FormDescription className="text-[#6B7280] text-sm">
                     Enter destination — we'll handle taxes and cost of living.
                   </FormDescription>
                 </FormItem>
