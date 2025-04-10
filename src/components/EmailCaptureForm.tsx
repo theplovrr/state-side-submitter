@@ -33,7 +33,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
     <div className="max-w-md mx-auto relative">
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 pointer-events-none animate-fade-in">
         <img 
-          src="/lovable-uploads/bird-suitcase.png" 
+          src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png" 
           alt="Bird with suitcase" 
           className="w-full h-auto object-contain"
         />
@@ -84,7 +84,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
             
             <div className="absolute -bottom-20 right-0 w-20 h-20 pointer-events-none animate-fade-in">
               <img 
-                src="/lovable-uploads/bird-travel.png" 
+                src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png" 
                 alt="Bird with travel bags" 
                 className="w-full h-auto object-contain transform scale-x-[-1]"
                 style={{ transform: 'scaleX(-1)' }}
