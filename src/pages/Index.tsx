@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -17,6 +16,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 import TypeaheadInput from "@/components/TypeaheadInput";
+import { X } from "lucide-react";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
@@ -58,6 +58,7 @@ const Index = () => {
   const [resultText, setResultText] = useState("");
   const [homeState, setHomeState] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [visibleOffers, setVisibleOffers] = useState(1); // Track number of visible offers
   
   const form = useForm();
   
@@ -67,6 +68,11 @@ const Index = () => {
   });
   
   const [offer2, setOffer2] = useState({
+    state: "",
+    salary: "",
+  });
+  
+  const [offer3, setOffer3] = useState({
     state: "",
     salary: "",
   });
@@ -81,10 +87,11 @@ const Index = () => {
       return false;
     }
     
-    const offer1Valid = offer1.state && offer1.salary;
-    const offer2Valid = offer2.state && offer2.salary;
+    const validOffers = [offer1, offer2, offer3].slice(0, visibleOffers).filter(
+      offer => offer.state && offer.salary
+    );
     
-    if (!offer1Valid && !offer2Valid) {
+    if (validOffers.length === 0) {
       toast({
         title: "Missing information",
         description: "Please complete at least one travel contract destination",
@@ -112,7 +119,8 @@ const Index = () => {
       // Gather all valid offers
       const validOffers = [];
       if (offer1.state && offer1.salary) validOffers.push(offer1);
-      if (offer2.state && offer2.salary) validOffers.push(offer2);
+      if (offer2.state && offer2.salary && visibleOffers >= 2) validOffers.push(offer2);
+      if (offer3.state && offer3.salary && visibleOffers >= 3) validOffers.push(offer3);
       
       const result = compareOffers(validOffers, homeState, email);
       setResultText(JSON.stringify(result));
@@ -133,15 +141,52 @@ const Index = () => {
       salary: "",
     });
     
+    setOffer3({
+      state: "",
+      salary: "",
+    });
+    
+    setVisibleOffers(1);
     setResultText("");
     setUserEmail("");
     setStep(1);
+  };
+
+  const addAnotherOffer = () => {
+    if (visibleOffers < 3) {
+      setVisibleOffers(visibleOffers + 1);
+    }
+  };
+
+  const removeOffer = (index: number) => {
+    if (index === 2) {
+      // Reset offer 2
+      setOffer2({
+        state: "",
+        salary: "",
+      });
+      setVisibleOffers(1);
+    } else if (index === 3) {
+      // Reset offer 3
+      setOffer3({
+        state: "",
+        salary: "",
+      });
+      setVisibleOffers(2);
+    }
   };
 
   const getProgressValue = () => {
     if (step === 1) return 33;
     if (step === 2) return 66;
     return 100;
+  };
+
+  // Check if any offer has valid data
+  const hasValidOffer = () => {
+    return (offer1.state && offer1.salary) || 
+           (offer2.state && offer2.salary && visibleOffers >= 2) || 
+           (offer3.state && offer3.salary && visibleOffers >= 3);
   };
 
   return (
@@ -200,24 +245,70 @@ const Index = () => {
 
         {step === 1 && (
           <>
-            <div className="grid md:grid-cols-2 gap-8 mb-10">
+            <div className="space-y-8 mb-10">
               <JobOfferForm 
                 index={1} 
                 formData={offer1} 
                 setFormData={setOffer1} 
               />
-              <JobOfferForm 
-                index={2} 
-                formData={offer2} 
-                setFormData={setOffer2} 
-                optional={true}
-              />
+              
+              {visibleOffers >= 2 && (
+                <div className="relative">
+                  <JobOfferForm 
+                    index={2} 
+                    formData={offer2} 
+                    setFormData={setOffer2} 
+                  />
+                  <button 
+                    onClick={() => removeOffer(2)}
+                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                    aria-label="Remove destination 2"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              )}
+              
+              {visibleOffers >= 3 && (
+                <div className="relative">
+                  <JobOfferForm 
+                    index={3} 
+                    formData={offer3} 
+                    setFormData={setOffer3} 
+                  />
+                  <button 
+                    onClick={() => removeOffer(3)}
+                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                    aria-label="Remove destination 3"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              )}
+              
+              {visibleOffers < 3 && (
+                <div className="flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={addAnotherOffer}
+                    className="border-gray-700 hover:bg-gray-800 text-white"
+                  >
+                    + Add Another Contract Destination (Compare up to 3)
+                  </Button>
+                </div>
+              )}
+              
+              {visibleOffers === 3 && (
+                <div className="text-center text-gray-400 text-sm">
+                  You're all set! Compare up to 3 destinations below.
+                </div>
+              )}
             </div>
             
             <div className="flex justify-center">
               <Button 
                 onClick={handleCompare} 
-                disabled={isAnalyzing}
+                disabled={isAnalyzing || !hasValidOffer()}
                 className="bg-white hover:bg-gray-200 text-black py-2 px-10 rounded-md text-base font-medium"
               >
                 Compare Destinations
@@ -248,11 +339,19 @@ const Index = () => {
                   disabled={true}
                 />
               )}
-              {offer2.state && offer2.salary && (
+              {offer2.state && offer2.salary && visibleOffers >= 2 && (
                 <JobOfferForm 
                   index={2} 
                   formData={offer2} 
                   setFormData={setOffer2} 
+                  disabled={true}
+                />
+              )}
+              {offer3.state && offer3.salary && visibleOffers >= 3 && (
+                <JobOfferForm 
+                  index={3} 
+                  formData={offer3} 
+                  setFormData={setOffer3} 
                   disabled={true}
                 />
               )}
