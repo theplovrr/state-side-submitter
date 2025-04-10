@@ -6,11 +6,14 @@ import { Download, Copy, Check, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const textRef = useRef(null);
+  const reportRef = useRef(null);
 
   // Parse the result text into structured data
   const parseResult = () => {
@@ -41,24 +44,114 @@ const ResultDisplay = ({ resultText }) => {
     }
   };
 
-  const handleDownload = () => {
-    // Create a proper blob with JSON formatting
-    const jsonString = JSON.stringify(result, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "travel-contract-analysis.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownload = async () => {
+    if (!result) {
+      toast({
+        title: "Error generating report",
+        description: "Could not generate PDF report from the data",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    // Show a toast to indicate we're generating the PDF
     toast({
-      title: "Contract analysis report downloaded",
+      title: "Generating your PDF report...",
       duration: 2000,
     });
+
+    try {
+      // Create a new PDF document
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Set up PDF content
+      const winningOffer = result.offers.find(offer => offer.isWinner);
+      
+      // Add logo
+      const logoImg = document.querySelector("img[alt='Plovrr Logo']");
+      if (logoImg) {
+        const logoCanvas = await html2canvas(logoImg as HTMLElement);
+        const logoData = logoCanvas.toDataURL('image/png');
+        pdf.addImage(logoData, 'PNG', 20, 10, 40, 20);
+      }
+      
+      // Add title and date
+      pdf.setFontSize(20);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("Contract Analysis Report", 20, 40);
+      
+      if (winningOffer) {
+        pdf.setFontSize(16);
+        pdf.text(`Your Top Contract: ${winningOffer.state}`, 20, 50);
+      }
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Report generated: ${result.reportDate}`, 20, 60);
+      
+      // Add table headers
+      pdf.setFontSize(12);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("Destination", 20, 70);
+      pdf.text("Weekly Pay", 70, 70);
+      pdf.text("IRS Stipend", 110, 70);
+      pdf.text("Cost of Living", 150, 70);
+      pdf.text("Est. Take-Home", 190, 70);
+      
+      // Add table divider
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(20, 72, 190, 72);
+      
+      // Add table rows
+      let yPosition = 80;
+      result.offers.forEach((offer, index) => {
+        // Highlight winner row with light yellow background
+        if (offer.isWinner) {
+          pdf.setFillColor(255, 245, 215);
+          pdf.rect(20, yPosition - 5, 170, 10, 'F');
+        }
+        
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(offer.state + (offer.isWinner ? " 🏆" : ""), 20, yPosition);
+        pdf.text(`$${offer.weeklySalary.toLocaleString()}`, 70, yPosition);
+        pdf.text(offer.irsStipendSafe, 110, yPosition);
+        pdf.text(offer.costOfLiving, 150, yPosition);
+        
+        // Bold the take-home pay amount for winner
+        if (offer.isWinner) {
+          pdf.setFont(undefined, 'bold');
+        }
+        pdf.text(`$${offer.estimatedTakeHome.toLocaleString()}`, 190, yPosition);
+        pdf.setFont(undefined, 'normal');
+        
+        yPosition += 12;
+      });
+      
+      // Add footer
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text("Provided by Plovrr - Travel Nurse Take-Home Pay & Tax Estimator", 20, 270);
+      
+      // Save the PDF
+      pdf.save("travel-contract-analysis.pdf");
+      
+      toast({
+        title: "Contract analysis report downloaded",
+        description: "Your PDF report has been generated successfully",
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast({
+        title: "Error generating report",
+        description: "There was an error creating your PDF report",
+        variant: "destructive",
+      });
+    }
   };
 
   // Get the winning offer (if any)
@@ -87,7 +180,7 @@ const ResultDisplay = ({ resultText }) => {
           </div>
         )}
 
-        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4" ref={reportRef}>
           <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
             <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
