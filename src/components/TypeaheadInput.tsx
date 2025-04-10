@@ -28,12 +28,14 @@ const TypeaheadInput = ({
   const [inputValue, setInputValue] = useState(value);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<any[]>([]);
+  const [noResultsFound, setNoResultsFound] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!inputValue.trim()) {
       setFilteredOptions([]);
+      setNoResultsFound(false);
       return;
     }
 
@@ -63,6 +65,7 @@ const TypeaheadInput = ({
     }
 
     setFilteredOptions(filtered.slice(0, 8));
+    setNoResultsFound(filtered.length === 0 && inputValue.trim() !== '');
   }, [inputValue, options, compareMode]);
 
   useEffect(() => {
@@ -104,6 +107,7 @@ const TypeaheadInput = ({
     setInputValue('');
     onChange('');
     inputRef.current?.focus();
+    setNoResultsFound(false);
   };
 
   return (
@@ -134,25 +138,33 @@ const TypeaheadInput = ({
         )}
       </div>
 
-      {showSuggestions && filteredOptions.length > 0 && (
+      {showSuggestions && (
         <div 
           ref={suggestionsRef}
           className="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-md shadow-sm max-h-60 overflow-auto"
         >
-          {filteredOptions.map((option, index) => {
-            const isString = typeof option === 'string';
-            const optionValue = isString ? option : option.name;
-            
-            return (
-              <div
-                key={index}
-                className="px-4 py-2 cursor-pointer hover:bg-[#F3F4F6] flex justify-between items-center"
-                onClick={() => handleSelectOption(option)}
-              >
-                <span>{optionValue}</span>
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => {
+              const isString = typeof option === 'string';
+              const optionValue = isString ? option : option.name;
+              
+              return (
+                <div
+                  key={index}
+                  className="px-4 py-2 cursor-pointer hover:bg-[#F3F4F6] flex justify-between items-center"
+                  onClick={() => handleSelectOption(option)}
+                >
+                  <span>{optionValue}</span>
+                </div>
+              );
+            })
+          ) : (
+            noResultsFound && compareMode === "cities" && (
+              <div className="px-4 py-3 text-[#4B5563]">
+                We couldn't find that city — try a major city or compare by state.
               </div>
-            );
-          })}
+            )
+          )}
         </div>
       )}
     </div>

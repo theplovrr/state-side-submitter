@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import TypeaheadInput from "./TypeaheadInput";
+import { Info } from "lucide-react";
 
 // List of all US states
 const states = [
@@ -109,7 +110,10 @@ const JobOfferForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-black font-medium text-base">Contract Location</FormLabel>
+                  <FormLabel className="text-black font-medium text-base flex items-center gap-2">
+                    Contract Location
+                    <Info className="h-4 w-4 text-[#9CA3AF]" />
+                  </FormLabel>
                   <FormControl>
                     <TypeaheadInput
                       value={formData.state}
@@ -122,7 +126,9 @@ const JobOfferForm = ({
                     />
                   </FormControl>
                   <FormDescription className="text-[#6B7280] text-sm">
-                    Enter destination — we'll handle taxes and cost of living.
+                    {compareMode === "cities" 
+                      ? "Search from top travel nurse destinations — major cities only for now." 
+                      : "Enter destination — we'll handle taxes and cost of living."}
                   </FormDescription>
                 </FormItem>
               )}
