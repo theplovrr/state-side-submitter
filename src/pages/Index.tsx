@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -6,20 +5,10 @@ import JobOfferForm from "@/components/JobOfferForm";
 import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel,
-  FormDescription
-} from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
-import TypeaheadInput from "@/components/TypeaheadInput";
 import { X } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import ComparisonToggle from "@/components/ComparisonToggle";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
@@ -34,7 +23,6 @@ const states = [
   "West Virginia", "Wisconsin", "Wyoming"
 ];
 
-// Example cities for autocomplete
 const majorCities = [
   "New York City", "Los Angeles", "Chicago", "Houston", "Phoenix", 
   "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
@@ -48,7 +36,6 @@ const majorCities = [
   "New Orleans", "Cleveland", "Honolulu", "Arlington", "Bakersfield"
 ];
 
-// Combined locations with type indicators
 const locations = [
   ...states.map(state => ({ name: state, type: "state" })),
   ...majorCities.map(city => ({ name: city, type: "city" }))
@@ -84,7 +71,6 @@ const Index = () => {
     const newMode = checked ? "cities" : "states";
     setCompareMode(newMode);
     
-    // Optional: clear inputs when changing modes to avoid confusion
     setOffer1({
       state: "",
       salary: "",
@@ -121,7 +107,6 @@ const Index = () => {
   const handleCompare = () => {
     if (!validateOffers()) return;
     
-    // Move to email capture step
     setStep(2);
   };
 
@@ -129,20 +114,17 @@ const Index = () => {
     setUserEmail(email);
     setIsAnalyzing(true);
     
-    // Simulate analysis delay
     setTimeout(() => {
-      // Gather all valid offers
       const validOffers = [];
       if (offer1.state && offer1.salary) validOffers.push(offer1);
       if (offer2.state && offer2.salary && visibleOffers >= 2) validOffers.push(offer2);
       if (offer3.state && offer3.salary && visibleOffers >= 3) validOffers.push(offer3);
       
-      // Use empty string for homeState since we're not collecting it in the MVP
       const result = compareOffers(validOffers, "", email);
       setResultText(JSON.stringify(result));
       setStep(3);
       setIsAnalyzing(false);
-    }, 2000); // 2 second delay for better UX
+    }, 2000);
   };
 
   const handleReset = () => {
@@ -176,14 +158,12 @@ const Index = () => {
 
   const removeOffer = (index: number) => {
     if (index === 2) {
-      // Reset offer 2
       setOffer2({
         state: "",
         salary: "",
       });
       setVisibleOffers(1);
     } else if (index === 3) {
-      // Reset offer 3
       setOffer3({
         state: "",
         salary: "",
@@ -198,14 +178,12 @@ const Index = () => {
     return 100;
   };
 
-  // Check if any offer has valid data
   const hasValidOffer = () => {
     return (offer1.state && offer1.salary) || 
            (offer2.state && offer2.salary && visibleOffers >= 2) || 
            (offer3.state && offer3.salary && visibleOffers >= 3);
   };
 
-  // Get the appropriate placeholder text based on the compare mode
   const getPlaceholderText = () => {
     return compareMode === "states" 
       ? "Type to search U.S. states..." 
@@ -217,11 +195,11 @@ const Index = () => {
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
-            <img src="/plovrr-logo.png" alt="Plovrr Logo" className="h-16" />
+            <img src="/lovable-uploads/90d7f47e-c8a6-4248-ab41-5ef50eb89b7c.png" alt="Plovrr Logo" className="h-16" />
           </div>
           
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3 text-white">
-            Plovrr: Travel Nurse Take-Home Pay & Tax Estimator
+            Travel Nurse Take-Home Pay & Tax Estimator
           </h1>
           
           <p className="text-gray-400 max-w-2xl mx-auto mb-6">
@@ -241,27 +219,17 @@ const Index = () => {
         {step === 1 && (
           <>
             <div className="space-y-8 mb-10">
-              {/* Toggle switch for compare mode */}
-              <div className="flex flex-col items-center space-y-2 mb-6">
-                <div className="text-center">
+              <div className="mb-6">
+                <div className="text-center mb-2">
                   <h3 className="text-white mb-2">Comparison Type</h3>
-                  <div className="flex items-center space-x-2">
-                    <span className={`text-sm ${compareMode === 'states' ? 'text-white font-medium' : 'text-gray-400'}`}>
-                      Compare States
-                    </span>
-                    <Switch 
-                      checked={compareMode === "cities"}
-                      onCheckedChange={handleModeChange}
-                      className="mx-2"
-                    />
-                    <span className={`text-sm ${compareMode === 'cities' ? 'text-white font-medium' : 'text-gray-400'}`}>
-                      Compare Cities
-                    </span>
-                  </div>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Switch between comparing contracts by state or by city.
-                  </p>
                 </div>
+                <ComparisonToggle 
+                  checked={compareMode === "cities"}
+                  onCheckedChange={handleModeChange}
+                />
+                <p className="text-gray-400 text-sm mt-2 text-center">
+                  Switch between comparing contracts by state or by city.
+                </p>
               </div>
             
               <JobOfferForm 
