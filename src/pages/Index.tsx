@@ -178,9 +178,9 @@ const Index = () => {
   };
 
   const getPlaceholderText = () => {
-    return compareMode === "states" 
-      ? "Type to search U.S. states..." 
-      : "Type to search U.S. cities...";
+    return compareMode === "cities" 
+      ? "Type to search U.S. cities..." 
+      : "Type to search U.S. states...";
   };
 
   return (
@@ -221,6 +221,7 @@ const Index = () => {
                 formData={offer1} 
                 setFormData={setOffer1}
                 placeholderText={getPlaceholderText()}
+                compareMode={compareMode}
               />
               
               {visibleOffers >= 2 && (
@@ -229,7 +230,8 @@ const Index = () => {
                     index={2} 
                     formData={offer2} 
                     setFormData={setOffer2}
-                    placeholderText={getPlaceholderText()} 
+                    placeholderText={getPlaceholderText()}
+                    compareMode={compareMode}
                   />
                   <button 
                     onClick={() => removeOffer(2)}
@@ -248,6 +250,7 @@ const Index = () => {
                     formData={offer3} 
                     setFormData={setOffer3}
                     placeholderText={getPlaceholderText()}
+                    compareMode={compareMode}
                   />
                   <button 
                     onClick={() => removeOffer(3)}
@@ -306,6 +309,7 @@ const Index = () => {
                   formData={offer1} 
                   setFormData={setOffer1} 
                   disabled={true}
+                  compareMode={compareMode}
                 />
               )}
               {offer2.state && offer2.salary && visibleOffers >= 2 && (
@@ -314,6 +318,7 @@ const Index = () => {
                   formData={offer2} 
                   setFormData={setOffer2} 
                   disabled={true}
+                  compareMode={compareMode}
                 />
               )}
               {offer3.state && offer3.salary && visibleOffers >= 3 && (
@@ -322,6 +327,7 @@ const Index = () => {
                   formData={offer3} 
                   setFormData={setOffer3} 
                   disabled={true}
+                  compareMode={compareMode}
                 />
               )}
             </div>

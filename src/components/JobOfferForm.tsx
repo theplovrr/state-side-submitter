@@ -58,7 +58,8 @@ const JobOfferForm = ({
   setFormData, 
   disabled = false,
   optional = false,
-  placeholderText = "Type to search locations..."
+  placeholderText = "Type to search locations...",
+  compareMode
 }) => {
   const form = useForm({
     defaultValues: formData
@@ -117,6 +118,7 @@ const JobOfferForm = ({
                       placeholder={placeholderText}
                       disabled={disabled}
                       allowFreeText={true}
+                      compareMode={compareMode}
                     />
                   </FormControl>
                   <FormDescription className="text-[#6B7280] text-sm">

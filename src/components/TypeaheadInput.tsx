@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ interface TypeaheadInputProps {
   disabled?: boolean;
   className?: string;
   allowFreeText?: boolean;
+  compareMode?: string;
 }
 
 const TypeaheadInput = ({
@@ -21,6 +23,7 @@ const TypeaheadInput = ({
   disabled = false,
   className,
   allowFreeText = false,
+  compareMode,
 }: TypeaheadInputProps) => {
   const [inputValue, setInputValue] = useState(value);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -39,15 +42,20 @@ const TypeaheadInput = ({
     let filtered;
     if (isComplexOptions) {
       const typedOptions = options as { name: string; type: string }[];
-      filtered = typedOptions.filter(option => 
+      
+      // Filter options based on compareMode if provided
+      let filteredByType = typedOptions;
+      if (compareMode) {
+        const filterType = compareMode === "cities" ? "city" : "state";
+        filteredByType = typedOptions.filter(option => option.type === filterType);
+      }
+      
+      filtered = filteredByType.filter(option => 
         option.name.toLowerCase().includes(inputValue.toLowerCase())
       );
       
-      filtered.sort((a, b) => {
-        if (a.type === 'state' && b.type !== 'state') return -1;
-        if (a.type !== 'state' && b.type === 'state') return 1;
-        return a.name.localeCompare(b.name);
-      });
+      // We're no longer sorting by type since we're already filtering by type
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       filtered = (options as string[]).filter(option => 
         option.toLowerCase().includes(inputValue.toLowerCase())
@@ -55,7 +63,7 @@ const TypeaheadInput = ({
     }
 
     setFilteredOptions(filtered.slice(0, 8));
-  }, [inputValue, options]);
+  }, [inputValue, options, compareMode]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -134,7 +142,6 @@ const TypeaheadInput = ({
           {filteredOptions.map((option, index) => {
             const isString = typeof option === 'string';
             const optionValue = isString ? option : option.name;
-            const optionType = isString ? null : option.type;
             
             return (
               <div
@@ -143,11 +150,6 @@ const TypeaheadInput = ({
                 onClick={() => handleSelectOption(option)}
               >
                 <span>{optionValue}</span>
-                {optionType && (
-                  <span className="text-xs text-[#6B7280] ml-2">
-                    ({optionType})
-                  </span>
-                )}
               </div>
             );
           })}
