@@ -5,7 +5,6 @@ import JobOfferForm from "@/components/JobOfferForm";
 import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
-import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 import { X } from "lucide-react";
 import ComparisonToggle from "@/components/ComparisonToggle";
@@ -172,12 +171,6 @@ const Index = () => {
     }
   };
 
-  const getProgressValue = () => {
-    if (step === 1) return 33;
-    if (step === 2) return 66;
-    return 100;
-  };
-
   const hasValidOffer = () => {
     return (offer1.state && offer1.salary) || 
            (offer2.state && offer2.salary && visibleOffers >= 2) || 
@@ -191,29 +184,20 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center mb-10">
-          <div className="flex justify-center mb-4">
-            <img src="/lovable-uploads/90d7f47e-c8a6-4248-ab41-5ef50eb89b7c.png" alt="Plovrr Logo" className="h-16" />
+          <div className="flex justify-center mb-6">
+            <img src="/lovable-uploads/90d7f47e-c8a6-4248-ab41-5ef50eb89b7c.png" alt="Plovrr Logo" className="h-12" />
           </div>
           
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3 text-white">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-black">
             Travel Nurse Take-Home Pay & Tax Estimator
           </h1>
           
-          <p className="text-gray-400 max-w-2xl mx-auto mb-6">
+          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
             See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
           </p>
-          
-          <div className="max-w-md mx-auto mb-8">
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span className={step === 1 ? "font-bold text-white" : ""}>Step 1: Enter Contracts</span>
-              <span className={step === 2 ? "font-bold text-white" : ""}>Step 2: Verify Email</span>
-              <span className={step === 3 ? "font-bold text-white" : ""}>Step 3: See Results</span>
-            </div>
-            <Progress value={getProgressValue()} className="h-2" />
-          </div>
         </div>
 
         {step === 1 && (
@@ -221,13 +205,13 @@ const Index = () => {
             <div className="space-y-8 mb-10">
               <div className="mb-6">
                 <div className="text-center mb-2">
-                  <h3 className="text-white mb-2">Comparison Type</h3>
+                  <h3 className="text-black mb-2 font-medium">Comparison Type</h3>
                 </div>
                 <ComparisonToggle 
                   checked={compareMode === "cities"}
                   onCheckedChange={handleModeChange}
                 />
-                <p className="text-gray-400 text-sm mt-2 text-center">
+                <p className="text-gray-600 text-sm mt-2 text-center">
                   Switch between comparing contracts by state or by city.
                 </p>
               </div>
@@ -249,7 +233,7 @@ const Index = () => {
                   />
                   <button 
                     onClick={() => removeOffer(2)}
-                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label="Remove destination 2"
                   >
                     <X size={18} />
@@ -267,7 +251,7 @@ const Index = () => {
                   />
                   <button 
                     onClick={() => removeOffer(3)}
-                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label="Remove destination 3"
                   >
                     <X size={18} />
@@ -280,7 +264,7 @@ const Index = () => {
                   <Button
                     variant="outline"
                     onClick={addAnotherOffer}
-                    className="border-gray-700 hover:bg-gray-800 text-white"
+                    className="border border-gray-300 hover:bg-gray-50 text-black"
                   >
                     + Add Another Contract Destination (Compare up to 3)
                   </Button>
@@ -288,7 +272,7 @@ const Index = () => {
               )}
               
               {visibleOffers === 3 && (
-                <div className="text-center text-gray-400 text-sm">
+                <div className="text-center text-gray-600 text-sm">
                   You're all set! Compare up to 3 destinations below.
                 </div>
               )}
@@ -298,7 +282,7 @@ const Index = () => {
               <Button 
                 onClick={handleCompare} 
                 disabled={isAnalyzing || !hasValidOffer()}
-                className="bg-white hover:bg-gray-200 text-black py-2 px-10 rounded-md text-base font-medium"
+                className="bg-white hover:bg-gray-50 text-black border border-black py-2 px-10 rounded-md text-base font-medium"
               >
                 Compare Destinations
               </Button>
@@ -348,7 +332,7 @@ const Index = () => {
               <Button 
                 onClick={handleReset}
                 variant="outline"
-                className="border-gray-700 hover:bg-gray-800 text-white"
+                className="border border-gray-300 hover:bg-gray-50 text-black"
               >
                 Start New Comparison
               </Button>
