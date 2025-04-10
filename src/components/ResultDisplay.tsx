@@ -1,12 +1,11 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Download, Copy, Check, Trophy, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download, Copy, Check, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import TakeHomePayChart from "./TakeHomePayChart";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
@@ -43,29 +42,54 @@ const ResultDisplay = ({ resultText }) => {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([resultText], { type: "text/plain" });
+    // Create a proper blob with JSON formatting
+    const jsonString = JSON.stringify(result, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
+    
     const a = document.createElement("a");
     a.href = url;
-    a.download = "travel-contract-analysis.txt";
+    a.download = "travel-contract-analysis.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
     toast({
-      title: "Contract analysis downloaded",
+      title: "Contract analysis report downloaded",
       duration: 2000,
     });
   };
+
+  // Get the winning offer (if any)
+  const getWinningOffer = () => {
+    if (!result || !result.offers || result.offers.length === 0) return null;
+    
+    return result.offers.find(offer => offer.isWinner);
+  };
+
+  const winningOffer = getWinningOffer();
 
   // Render a table display if we have structured data
   if (result) {
     return (
       <>
-        <Card className="w-full shadow-lg bg-black text-white border-gray-800 mt-8">
-          <CardHeader className="bg-black border-b border-gray-800 flex flex-row justify-between items-center p-4">
-            <CardTitle className="text-xl font-bold text-white">
+        {winningOffer && (
+          <div className="flex flex-col items-center justify-center mb-6 animate-fade-in">
+            <h2 className="text-2xl font-bold text-center mb-2">
+              Your Top Contract: {winningOffer.state}
+            </h2>
+            <div className="flex items-center justify-center">
+              <Badge className="bg-yellow-500 text-black flex items-center px-3 py-1.5 text-sm">
+                <Trophy className="h-4 w-4 mr-1" /> Winner!
+              </Badge>
+            </div>
+          </div>
+        )}
+
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-6">
+          <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
+            <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
                 ? "Contract Analysis" 
                 : "Contract Comparison"
@@ -76,7 +100,7 @@ const ResultDisplay = ({ resultText }) => {
                 variant="outline" 
                 size="sm" 
                 onClick={handleCopy}
-                className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
+                className="border-gray-200 bg-white hover:bg-gray-50 text-black"
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
                 <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
@@ -85,35 +109,34 @@ const ResultDisplay = ({ resultText }) => {
                 variant="outline" 
                 size="sm" 
                 onClick={handleDownload}
-                className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
+                className="border-gray-200 bg-white hover:bg-gray-50 text-black"
               >
                 <Download size={16} />
-                <span className="ml-2">Download</span>
+                <span className="ml-2">Download Report</span>
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="mb-4 p-3 bg-gray-900 rounded-md border border-gray-800">
-              <p className="text-gray-300"><span className="font-semibold">Home State:</span> {result.homeState}</p>
+          <CardContent className="p-4">
+            <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-gray-600"><span className="font-semibold">Home State:</span> {result.homeState || "Not specified"}</p>
             </div>
             
             <Table className="border-collapse">
-              <TableHeader className="bg-gray-900">
-                <TableRow className="border-gray-800">
-                  <TableHead className="text-gray-300">Destination</TableHead>
-                  <TableHead className="text-gray-300">Weekly Pay</TableHead>
-                  <TableHead className="text-gray-300">Home State Tax Impact</TableHead>
-                  <TableHead className="text-gray-300">Total Taxes</TableHead>
-                  <TableHead className="text-gray-300">IRS Stipend Safe?</TableHead>
-                  <TableHead className="text-gray-300">Cost of Living</TableHead>
-                  <TableHead className="text-gray-300">Est. Take-Home</TableHead>
+              <TableHeader className="bg-gray-50">
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-black">Destination</TableHead>
+                  <TableHead className="text-black">Weekly Pay</TableHead>
+                  <TableHead className="text-black">Tax Impact</TableHead>
+                  <TableHead className="text-black">IRS Stipend Safe?</TableHead>
+                  <TableHead className="text-black">Cost of Living</TableHead>
+                  <TableHead className="text-black">Est. Take-Home</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {result.offers.map((offer, index) => (
                   <TableRow 
                     key={index} 
-                    className={`border-gray-800 ${offer.isWinner ? 'bg-gray-800 animate-pulse' : ''}`}
+                    className={`border-gray-200 ${offer.isWinner ? 'bg-yellow-50' : ''}`}
                   >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -127,17 +150,16 @@ const ResultDisplay = ({ resultText }) => {
                     </TableCell>
                     <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
                     <TableCell>{offer.homeStateTaxImpact}</TableCell>
-                    <TableCell>{offer.totalTaxes}</TableCell>
                     <TableCell>
-                      <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-600" : "bg-red-600"}>
+                      <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
                         {offer.irsStipendSafe}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge className={
-                        offer.costOfLiving === "Low" ? "bg-green-600" : 
-                        offer.costOfLiving === "Medium" ? "bg-yellow-600" : 
-                        "bg-red-600"
+                        offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                        offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                        "bg-red-100 text-red-800 border-red-200"
                       }>
                         {offer.costOfLiving}
                       </Badge>
@@ -149,48 +171,27 @@ const ResultDisplay = ({ resultText }) => {
                 ))}
               </TableBody>
             </Table>
-
-            <div className="mt-6">
-              <h3 className="font-semibold text-lg mb-2">Additional Considerations</h3>
-              <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                {result.additionalConsiderations.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
             
-            <div className="text-xs text-gray-400 mt-4">
-              Report generated by Plovrr on: {result.reportDate}
+            <div className="text-xs text-gray-500 mt-4 text-right">
+              Report generated: {result.reportDate}
             </div>
           </CardContent>
-          <CardFooter className="bg-gray-900 p-6 flex flex-col items-center space-y-4 border-t border-gray-800">
-            <p className="text-center text-gray-300 font-medium">Ready to take action on this analysis?</p>
-            <Button className="bg-white hover:bg-gray-200 text-black flex items-center gap-2">
-              Sign up for Plovrr to maximize your earnings and simplify taxes
-              <ArrowRight size={16} />
-            </Button>
-          </CardFooter>
         </Card>
-
-        {/* Only show the chart if we have more than one offer to compare */}
-        {result.offers.length > 1 && (
-          <TakeHomePayChart offers={result.offers} />
-        )}
       </>
     );
   }
 
   // Fallback to the original text display if parsing failed
   return (
-    <Card className="w-full shadow-lg bg-black text-white border-gray-800 mt-8">
-      <CardHeader className="bg-black border-b border-gray-800 flex flex-row justify-between items-center p-4">
-        <CardTitle className="text-xl font-bold text-white">Contract Analysis</CardTitle>
+    <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-6">
+      <CardHeader className="bg-white border-b border-gray-200 flex flex-row justify-between items-center p-4">
+        <CardTitle className="text-xl font-bold text-black">Contract Analysis</CardTitle>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={handleCopy}
-            className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
+            className="border-gray-200 bg-white hover:bg-gray-50 text-black"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
             <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
@@ -199,28 +200,21 @@ const ResultDisplay = ({ resultText }) => {
             variant="outline" 
             size="sm" 
             onClick={handleDownload}
-            className="border-gray-700 bg-gray-900 hover:bg-gray-800 text-white"
+            className="border-gray-200 bg-white hover:bg-gray-50 text-black"
           >
             <Download size={16} />
-            <span className="ml-2">Download</span>
+            <span className="ml-2">Download Report</span>
           </Button>
         </div>
       </CardHeader>
       <CardContent className="p-6">
         <div 
           ref={textRef}
-          className="whitespace-pre-wrap font-mono text-sm bg-gray-900 p-6 rounded border border-gray-700 max-h-[500px] overflow-y-auto text-white"
+          className="whitespace-pre-wrap font-mono text-sm bg-gray-50 p-6 rounded border border-gray-200 max-h-[500px] overflow-y-auto text-black"
         >
           {resultText}
         </div>
       </CardContent>
-      <CardFooter className="bg-gray-900 p-6 flex flex-col items-center space-y-4 border-t border-gray-800">
-        <p className="text-center text-gray-300 font-medium">Ready to take action on this analysis?</p>
-        <Button className="bg-white hover:bg-gray-200 text-black flex items-center gap-2">
-          Sign up for Plovrr to maximize your earnings and simplify taxes
-          <ArrowRight size={16} />
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

@@ -313,39 +313,9 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              {offer1.state && offer1.salary && (
-                <JobOfferForm 
-                  index={1} 
-                  formData={offer1} 
-                  setFormData={setOffer1} 
-                  disabled={true}
-                  compareMode={compareMode}
-                />
-              )}
-              {offer2.state && offer2.salary && visibleOffers >= 2 && (
-                <JobOfferForm 
-                  index={2} 
-                  formData={offer2} 
-                  setFormData={setOffer2} 
-                  disabled={true}
-                  compareMode={compareMode}
-                />
-              )}
-              {offer3.state && offer3.salary && visibleOffers >= 3 && (
-                <JobOfferForm 
-                  index={3} 
-                  formData={offer3} 
-                  setFormData={setOffer3} 
-                  disabled={true}
-                  compareMode={compareMode}
-                />
-              )}
-            </div>
-            
             <ResultDisplay resultText={resultText} />
             
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-6">
               <Button 
                 onClick={handleReset}
                 variant="outline"
