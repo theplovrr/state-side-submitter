@@ -30,18 +30,35 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
   };
 
   return (
-    <div className="max-w-md mx-auto relative">
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 pointer-events-none animate-fade-in">
-        <img 
-          src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png" 
-          alt="Bird with suitcase" 
-          className="w-full h-auto object-contain"
-        />
+    <div className="max-w-md mx-auto">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+          Travel Nurse Take-Home Pay & Tax Estimator
+        </h1>
+        <p className="text-gray-600 max-w-2xl mx-auto mb-6 font-medium">
+          See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
+        </p>
+      </div>
+
+      <div className="flex justify-center items-center mb-6 space-x-6">
+        <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
+          <img 
+            src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png" 
+            alt="Plovrr mascot with suitcase" 
+            className="w-full h-auto object-contain"
+          />
+        </div>
+        <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
+          <img 
+            src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png" 
+            alt="Plovrr mascot with luggage" 
+            className="w-full h-auto object-contain"
+          />
+        </div>
       </div>
 
       <div className="text-center mb-5">
-        <h2 className="text-2xl font-bold text-black mb-2">Get Your Personalized Take-Home Pay & Tax Breakdown</h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 mb-6">
           Enter your email to unlock your estimated take-home pay and tax details for your contracts.
         </p>
       </div>
@@ -66,7 +83,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
             )}
           />
 
-          <div className="pt-1 relative">
+          <div className="pt-2 mb-10">
             <Button 
               type="submit" 
               disabled={isLoading}
@@ -81,15 +98,6 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
                 "Show Me My Results"
               )}
             </Button>
-            
-            <div className="absolute -bottom-20 right-0 w-20 h-20 pointer-events-none animate-fade-in">
-              <img 
-                src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png" 
-                alt="Bird with travel bags" 
-                className="w-full h-auto object-contain transform scale-x-[-1]"
-                style={{ transform: 'scaleX(-1)' }}
-              />
-            </div>
           </div>
         </form>
       </Form>
