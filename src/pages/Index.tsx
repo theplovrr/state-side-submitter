@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -17,6 +18,8 @@ import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 import TypeaheadInput from "@/components/TypeaheadInput";
 import { X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
@@ -56,9 +59,9 @@ const Index = () => {
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [resultText, setResultText] = useState("");
-  const [homeState, setHomeState] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [visibleOffers, setVisibleOffers] = useState(1); // Track number of visible offers
+  const [compareMode, setCompareMode] = useState("states"); // "states" or "cities"
   
   const form = useForm();
   
@@ -77,16 +80,28 @@ const Index = () => {
     salary: "",
   });
 
-  const validateOffers = () => {
-    if (!homeState) {
-      toast({
-        title: "Missing information",
-        description: "Please select your home city or state",
-        variant: "destructive",
-      });
-      return false;
-    }
+  const handleModeChange = (checked: boolean) => {
+    const newMode = checked ? "cities" : "states";
+    setCompareMode(newMode);
     
+    // Optional: clear inputs when changing modes to avoid confusion
+    setOffer1({
+      state: "",
+      salary: "",
+    });
+    
+    setOffer2({
+      state: "",
+      salary: "",
+    });
+    
+    setOffer3({
+      state: "",
+      salary: "",
+    });
+  };
+
+  const validateOffers = () => {
     const validOffers = [offer1, offer2, offer3].slice(0, visibleOffers).filter(
       offer => offer.state && offer.salary
     );
@@ -122,7 +137,8 @@ const Index = () => {
       if (offer2.state && offer2.salary && visibleOffers >= 2) validOffers.push(offer2);
       if (offer3.state && offer3.salary && visibleOffers >= 3) validOffers.push(offer3);
       
-      const result = compareOffers(validOffers, homeState, email);
+      // Use empty string for homeState since we're not collecting it in the MVP
+      const result = compareOffers(validOffers, "", email);
       setResultText(JSON.stringify(result));
       setStep(3);
       setIsAnalyzing(false);
@@ -130,7 +146,6 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setHomeState("");
     setOffer1({
       state: "",
       salary: "",
@@ -150,6 +165,7 @@ const Index = () => {
     setResultText("");
     setUserEmail("");
     setStep(1);
+    setCompareMode("states");
   };
 
   const addAnotherOffer = () => {
@@ -189,6 +205,13 @@ const Index = () => {
            (offer3.state && offer3.salary && visibleOffers >= 3);
   };
 
+  // Get the appropriate placeholder text based on the compare mode
+  const getPlaceholderText = () => {
+    return compareMode === "states" 
+      ? "Type to search U.S. states..." 
+      : "Type to search U.S. cities...";
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -213,43 +236,39 @@ const Index = () => {
             </div>
             <Progress value={getProgressValue()} className="h-2" />
           </div>
-          
-          {step === 1 && (
-            <div className="max-w-md mx-auto mb-8">
-              <Form {...form}>
-                <FormField
-                  control={form.control}
-                  name="homeState"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white font-medium text-base">Home City or State</FormLabel>
-                      <FormControl>
-                        <TypeaheadInput
-                          value={homeState}
-                          onChange={setHomeState}
-                          options={locations}
-                          placeholder="Enter your home city or state..."
-                          allowFreeText={true}
-                        />
-                      </FormControl>
-                      <FormDescription className="text-gray-400 text-sm">
-                        We'll adjust your taxes based on your home location.
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
-              </Form>
-            </div>
-          )}
         </div>
 
         {step === 1 && (
           <>
             <div className="space-y-8 mb-10">
+              {/* Toggle switch for compare mode */}
+              <div className="flex flex-col items-center space-y-2 mb-6">
+                <div className="text-center">
+                  <h3 className="text-white mb-2">Comparison Type</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-sm ${compareMode === 'states' ? 'text-white font-medium' : 'text-gray-400'}`}>
+                      Compare States
+                    </span>
+                    <Switch 
+                      checked={compareMode === "cities"}
+                      onCheckedChange={handleModeChange}
+                      className="mx-2"
+                    />
+                    <span className={`text-sm ${compareMode === 'cities' ? 'text-white font-medium' : 'text-gray-400'}`}>
+                      Compare Cities
+                    </span>
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Switch between comparing contracts by state or by city.
+                  </p>
+                </div>
+              </div>
+            
               <JobOfferForm 
                 index={1} 
                 formData={offer1} 
-                setFormData={setOffer1} 
+                setFormData={setOffer1}
+                placeholderText={getPlaceholderText()}
               />
               
               {visibleOffers >= 2 && (
@@ -257,7 +276,8 @@ const Index = () => {
                   <JobOfferForm 
                     index={2} 
                     formData={offer2} 
-                    setFormData={setOffer2} 
+                    setFormData={setOffer2}
+                    placeholderText={getPlaceholderText()} 
                   />
                   <button 
                     onClick={() => removeOffer(2)}
@@ -274,7 +294,8 @@ const Index = () => {
                   <JobOfferForm 
                     index={3} 
                     formData={offer3} 
-                    setFormData={setOffer3} 
+                    setFormData={setOffer3}
+                    placeholderText={getPlaceholderText()}
                   />
                   <button 
                     onClick={() => removeOffer(3)}
@@ -326,10 +347,6 @@ const Index = () => {
         
         {step === 3 && (
           <>
-            <div className="bg-black border border-gray-800 rounded-lg p-4 mb-8">
-              <p className="text-white"><strong>Home Location:</strong> {homeState}</p>
-            </div>
-            
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               {offer1.state && offer1.salary && (
                 <JobOfferForm 

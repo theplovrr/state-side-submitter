@@ -57,7 +57,8 @@ const JobOfferForm = ({
   formData, 
   setFormData, 
   disabled = false,
-  optional = false
+  optional = false,
+  placeholderText = "Type to search locations..."
 }) => {
   const form = useForm({
     defaultValues: formData
@@ -107,19 +108,19 @@ const JobOfferForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium text-base">Contract Location (City or State)</FormLabel>
+                  <FormLabel className="text-white font-medium text-base">Contract Location</FormLabel>
                   <FormControl>
                     <TypeaheadInput
                       value={formData.state}
                       onChange={(value) => handleChange("state", value)}
                       options={locations}
-                      placeholder="Type to search locations..."
+                      placeholder={placeholderText}
                       disabled={disabled}
                       allowFreeText={true}
                     />
                   </FormControl>
                   <FormDescription className="text-gray-400 text-sm">
-                    Enter city or state — we'll handle taxes and cost of living.
+                    Enter destination — we'll handle taxes and cost of living.
                   </FormDescription>
                 </FormItem>
               )}
