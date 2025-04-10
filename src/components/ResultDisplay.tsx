@@ -75,7 +75,7 @@ const ResultDisplay = ({ resultText }) => {
     return (
       <>
         {winningOffer && (
-          <div className="flex flex-col items-center justify-center mb-6 animate-fade-in">
+          <div className="flex flex-col items-center justify-center mb-4 animate-fade-in">
             <h2 className="text-2xl font-bold text-center mb-2">
               Your Top Contract: {winningOffer.state}
             </h2>
@@ -87,7 +87,7 @@ const ResultDisplay = ({ resultText }) => {
           </div>
         )}
 
-        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-6">
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
           <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
             <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
@@ -112,21 +112,16 @@ const ResultDisplay = ({ resultText }) => {
                 className="border-gray-200 bg-white hover:bg-gray-50 text-black"
               >
                 <Download size={16} />
-                <span className="ml-2">Download Report</span>
+                <span className="ml-2">Download Detailed Report</span>
               </Button>
             </div>
           </CardHeader>
           <CardContent className="p-4">
-            <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-              <p className="text-gray-600"><span className="font-semibold">Home State:</span> {result.homeState || "Not specified"}</p>
-            </div>
-            
             <Table className="border-collapse">
               <TableHeader className="bg-gray-50">
                 <TableRow className="border-gray-200">
                   <TableHead className="text-black">Destination</TableHead>
                   <TableHead className="text-black">Weekly Pay</TableHead>
-                  <TableHead className="text-black">Tax Impact</TableHead>
                   <TableHead className="text-black">IRS Stipend Safe?</TableHead>
                   <TableHead className="text-black">Cost of Living</TableHead>
                   <TableHead className="text-black">Est. Take-Home</TableHead>
@@ -149,7 +144,6 @@ const ResultDisplay = ({ resultText }) => {
                       </div>
                     </TableCell>
                     <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
-                    <TableCell>{offer.homeStateTaxImpact}</TableCell>
                     <TableCell>
                       <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
                         {offer.irsStipendSafe}
@@ -164,7 +158,7 @@ const ResultDisplay = ({ resultText }) => {
                         {offer.costOfLiving}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-bold">
+                    <TableCell className={`font-bold ${offer.isWinner ? 'text-black' : ''}`}>
                       ${offer.estimatedTakeHome.toLocaleString()}
                     </TableCell>
                   </TableRow>
@@ -183,7 +177,7 @@ const ResultDisplay = ({ resultText }) => {
 
   // Fallback to the original text display if parsing failed
   return (
-    <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-6">
+    <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
       <CardHeader className="bg-white border-b border-gray-200 flex flex-row justify-between items-center p-4">
         <CardTitle className="text-xl font-bold text-black">Contract Analysis</CardTitle>
         <div className="flex space-x-2">
@@ -203,11 +197,11 @@ const ResultDisplay = ({ resultText }) => {
             className="border-gray-200 bg-white hover:bg-gray-50 text-black"
           >
             <Download size={16} />
-            <span className="ml-2">Download Report</span>
+            <span className="ml-2">Download Detailed Report</span>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div 
           ref={textRef}
           className="whitespace-pre-wrap font-mono text-sm bg-gray-50 p-6 rounded border border-gray-200 max-h-[500px] overflow-y-auto text-black"
