@@ -56,7 +56,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
 
       <div className="text-center mb-5">
         <p className="text-gray-600 mb-6">
-          See your estimated take-home pay and tax details for your contracts. We're keeping the page minimal and natural — please prioritize clean visual hierarchy and tone of voice that feels helpful, not salesy.
+          See your estimated take-home pay and tax details for your contracts.
         </p>
       </div>
 
