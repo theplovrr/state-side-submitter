@@ -35,9 +35,6 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black">
           Travel Nurse Take-Home Pay & Tax Estimator
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto mb-6 font-medium">
-          See your real earnings after taxes, stipends, and cost of living — before you sign your next contract.
-        </p>
       </div>
 
       <div className="flex justify-center items-center mb-6 space-x-6">
@@ -59,7 +56,7 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
 
       <div className="text-center mb-5">
         <p className="text-gray-600 mb-6">
-          Enter your email to unlock your estimated take-home pay and tax details for your contracts.
+          See your estimated take-home pay and tax details for your contracts. We're keeping the page minimal and natural — please prioritize clean visual hierarchy and tone of voice that feels helpful, not salesy.
         </p>
       </div>
 
