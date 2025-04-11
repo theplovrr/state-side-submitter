@@ -191,7 +191,7 @@ const ResultDisplay = ({ resultText }) => {
         <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4" id="report-content">
           <CardHeader className="bg-white border-b border-gray-200 p-4">
             <CardTitle className="text-xl font-bold text-black">
-              Contract Comparison Summary
+              Summary Breakdown
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
