@@ -65,8 +65,8 @@ const ResultDisplay = ({ resultText }) => {
           <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
             <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
-                ? "Detailed Contract Analysis" 
-                : "Detailed Contract Comparison"
+                ? "Detailed Contract Analysis Report" 
+                : "Detailed Contract Comparison Report"
               }
             </CardTitle>
           </CardHeader>
@@ -80,7 +80,7 @@ const ResultDisplay = ({ resultText }) => {
                   <TableHead className="text-black">Cost of Living</TableHead>
                   <TableHead className="text-black">
                     <div className="flex items-center gap-1">
-                      Est. Taxes (Deducted Weekly)*
+                      Est. Taxes (Deducted Weekly)
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -93,21 +93,7 @@ const ResultDisplay = ({ resultText }) => {
                       </TooltipProvider>
                     </div>
                   </TableHead>
-                  <TableHead className="text-black">
-                    <div className="flex items-center gap-1">
-                      Est. Take-Home (Weekly)*
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-3.5 w-3.5 text-gray-500 cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-[250px] text-xs">
-                            Estimates based on available tax data. For your exact taxes, consult your tax professional.
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </TableHead>
+                  <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -155,7 +141,7 @@ const ResultDisplay = ({ resultText }) => {
               </TableBody>
             </Table>
             
-            {/* Collapsible detailed report section with enhanced formatting to match table style */}
+            {/* Detailed breakdown section with button to show/hide */}
             <div className="mt-6">
               <Collapsible
                 open={isDetailsOpen}
@@ -179,7 +165,7 @@ const ResultDisplay = ({ resultText }) => {
                     {result.textReport ? (
                       <div>
                         {/* Custom formatted version that matches the table style */}
-                        <div className="text-xl font-bold border-b border-gray-200 pb-3 mb-4">Detailed Contract Analysis</div>
+                        <div className="text-xl font-bold border-b border-gray-200 pb-3 mb-4">Detailed Contract Analysis Report</div>
                         
                         {winningOffer && (
                           <div className="flex items-center mb-6 border-b border-gray-200 pb-3">
@@ -302,7 +288,7 @@ const ResultDisplay = ({ resultText }) => {
                           Report generated: {result.reportDate}
                         </div>
                         <div className="text-xs text-gray-500">
-                          *DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.
+                          DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.
                         </div>
                       </div>
                     ) : (
@@ -331,7 +317,7 @@ const ResultDisplay = ({ resultText }) => {
   return (
     <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
       <CardHeader className="bg-white border-b border-gray-200 flex flex-row justify-between items-center p-4">
-        <CardTitle className="text-xl font-bold text-black">Detailed Contract Analysis</CardTitle>
+        <CardTitle className="text-xl font-bold text-black">Detailed Contract Analysis Report</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <div 
