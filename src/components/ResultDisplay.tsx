@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, HelpCircle, ChevronDown, ChevronUp, DollarSign, Home, Calculator } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,27 +13,39 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [expandedOffers, setExpandedOffers] = useState({});
 
-  // Parse the result text into structured data
+  // Log resultText to debug API structure
+  console.log("ResultText received:", resultText);
+
+  // Parse the result text into structured data with safe handling
   const parseResult = () => {
+    if (!resultText) {
+      console.log("No result text provided");
+      return null;
+    }
+    
     try {
-      return JSON.parse(resultText);
+      const parsed = JSON.parse(resultText);
+      console.log("Successfully parsed result:", parsed);
+      return parsed;
     } catch (e) {
+      console.error("Error parsing result:", e);
       return null;
     }
   };
 
   const result = parseResult();
 
-  // Get the winning offer (if any)
+  // Get the winning offer (if any) with safe handling
   const getWinningOffer = () => {
-    if (!result || !result.offers || result.offers.length === 0) return null;
-    return result.offers.find(offer => offer.isWinner);
+    if (!result || !result.offers || !Array.isArray(result.offers) || result.offers.length === 0) return null;
+    return result.offers.find(offer => offer && offer.isWinner);
   };
 
   const winningOffer = getWinningOffer();
@@ -46,12 +58,17 @@ const ResultDisplay = ({ resultText }) => {
     }));
   };
 
-  // Render detailed breakdown for a single offer
+  // Render detailed breakdown for a single offer with safe handling
   const renderDetailedBreakdown = (offer, index) => {
-    if (!expandedOffers[index]) return null;
+    if (!expandedOffers[index] || !offer) return null;
 
-    // Calculate tax breakdown
-    const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
+    // Safely extract values with fallbacks
+    const weeklySalary = offer.weeklySalary || 0;
+    const totalTaxAmount = parseInt((offer.totalTaxes || "$0").replace(/[^0-9.-]+/g, "")) || 0;
+    const costOfLiving = offer.costOfLiving || "Medium";
+    const estimatedTakeHome = offer.estimatedTakeHome || 0;
+    
+    // Calculate tax breakdown with safe math
     const federalTax = Math.round(totalTaxAmount * 0.6);
     const stateTax = Math.round(totalTaxAmount * 0.35);
     const cityTax = Math.round(totalTaxAmount * 0.05);
@@ -60,16 +77,16 @@ const ResultDisplay = ({ resultText }) => {
     const weeklyStateTax = Math.round(stateTax / 52);
     const weeklyCityTax = Math.round(cityTax / 52);
     
-    const grossIncomeForThreeMonths = offer.weeklySalary * 13;
+    const grossIncomeForThreeMonths = weeklySalary * 13;
     const taxesForThreeMonths = Math.round(totalTaxAmount / 4);
-    const livingCostsForThreeMonths = offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300;
-    const estimatedSavingsForThreeMonths = Math.round((offer.estimatedTakeHome * 13) - livingCostsForThreeMonths);
+    const livingCostsForThreeMonths = costOfLiving === "Low" ? 6500 : costOfLiving === "Medium" ? 9750 : 14300;
+    const estimatedSavingsForThreeMonths = Math.round((estimatedTakeHome * 13) - livingCostsForThreeMonths);
 
     return (
       <tr className="animate-accordion-down border-0">
-        <td colSpan={6} className="p-0 border-0">
+        <td colSpan={7} className="p-0 border-0">
           <div className={`px-4 pb-6 pt-2 ${offer.isWinner ? 'bg-yellow-50' : 'bg-white'}`}>
-            <div className="text-xl font-bold mb-4">{offer.state} Detailed Report</div>
+            <div className="text-xl font-bold mb-4">{offer.state || "Location"} Detailed Report</div>
             
             <div className="space-y-6">
               {/* Income Breakdown Section */}
@@ -81,15 +98,15 @@ const ResultDisplay = ({ resultText }) => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div>Weekly Salary:</div>
-                    <div className="font-medium">${offer.weeklySalary.toLocaleString()}</div>
+                    <div className="font-medium">${weeklySalary.toLocaleString()}</div>
                   </div>
                   <div className="flex justify-between">
                     <div>Weekly Taxable Income:</div>
-                    <div className="font-medium">${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</div>
+                    <div className="font-medium">${Math.round(weeklySalary * 0.6).toLocaleString()}</div>
                   </div>
                   <div className="flex justify-between">
                     <div>Weekly Tax-Free Stipends:</div>
-                    <div className="font-medium">${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</div>
+                    <div className="font-medium">${Math.round(weeklySalary * 0.4).toLocaleString()}</div>
                   </div>
                   <div className="flex justify-between">
                     <div>Est. Weekly Taxes*:</div>
@@ -97,7 +114,7 @@ const ResultDisplay = ({ resultText }) => {
                   </div>
                   <div className="flex justify-between pt-1 border-t border-gray-100">
                     <div className="font-semibold">Estimated Weekly Take-Home:</div>
-                    <div className="font-bold text-green-600">${offer.estimatedTakeHome.toLocaleString()}</div>
+                    <div className="font-bold text-green-600">${estimatedTakeHome.toLocaleString()}</div>
                   </div>
                 </div>
               </div>
@@ -111,19 +128,19 @@ const ResultDisplay = ({ resultText }) => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div>Classification:</div>
-                    <Badge className={offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                      offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                    <Badge className={costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                      costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
                       "bg-red-100 text-red-800 border-red-200"}>
-                      {offer.costOfLiving}
+                      {costOfLiving}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
                     <div>Est. Monthly Housing:</div>
-                    <div className="font-medium">${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
+                    <div className="font-medium">${costOfLiving === "Low" ? "1,200" : costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
                   </div>
                   <div className="flex justify-between">
                     <div>Est. Monthly Expenses:</div>
-                    <div className="font-medium">${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
+                    <div className="font-medium">${costOfLiving === "Low" ? "800" : costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
                   </div>
                 </div>
               </div>
@@ -160,8 +177,50 @@ const ResultDisplay = ({ resultText }) => {
     );
   };
 
+  // Loading state skeleton
+  const renderLoadingSkeleton = () => (
+    <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
+      <CardHeader className="bg-white border-b border-gray-200 p-4">
+        <Skeleton className="h-8 w-64" />
+      </CardHeader>
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-8 w-3/4 mx-auto" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // If we're parsing or loading, show skeleton
+  if (resultText && !result) {
+    return renderLoadingSkeleton();
+  }
+
   // If we have structured data
   if (result) {
+    // Additional safeguards: Check for required keys
+    if (!result.offers || !Array.isArray(result.offers)) {
+      return (
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
+          <CardHeader className="bg-white border-b border-gray-200 p-4">
+            <CardTitle className="text-xl font-bold text-black">
+              Offer Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="p-6 text-center">
+              <p>Unable to display offers. The data format appears to be incorrect.</p>
+              <pre className="mt-4 text-xs text-left bg-gray-100 p-2 rounded overflow-auto max-h-[200px]">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     return (
       <>
         {winningOffer && (
@@ -212,40 +271,51 @@ const ResultDisplay = ({ resultText }) => {
               </TableHeader>
               <TableBody>
                 {result.offers.map((offer, index) => {
+                  // Safely handle missing data with defaults
+                  const safeOffer = {
+                    state: offer?.state || "Unknown Location",
+                    weeklySalary: offer?.weeklySalary || 0,
+                    irsStipendSafe: offer?.irsStipendSafe || "No",
+                    costOfLiving: offer?.costOfLiving || "Medium",
+                    totalTaxes: offer?.totalTaxes || "$0",
+                    estimatedTakeHome: offer?.estimatedTakeHome || 0,
+                    isWinner: !!offer?.isWinner
+                  };
+                  
                   // Calculate weekly taxes (annual taxes divided by 52)
-                  const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
+                  const weeklyTaxes = parseInt(safeOffer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52 || 0;
                   
                   return (
                     <React.Fragment key={`offer-${index}`}>
-                      <TableRow isWinner={offer.isWinner}>
+                      <TableRow isWinner={safeOffer.isWinner}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            {offer.state}
-                            {offer.isWinner && (
+                            {safeOffer.state}
+                            {safeOffer.isWinner && (
                               <Badge className="bg-yellow-500 text-black">
                                 <Trophy className="h-3 w-3 mr-1" /> Winner!
                               </Badge>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
+                        <TableCell>${safeOffer.weeklySalary.toLocaleString()}</TableCell>
                         <TableCell>
-                          <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
-                            {offer.irsStipendSafe}
+                          <Badge className={safeOffer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
+                            {safeOffer.irsStipendSafe}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <Badge className={
-                            offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                            offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                            safeOffer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                            safeOffer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
                             "bg-red-100 text-red-800 border-red-200"
                           }>
-                            {offer.costOfLiving}
+                            {safeOffer.costOfLiving}
                           </Badge>
                         </TableCell>
                         <TableCell>${Math.round(weeklyTaxes).toLocaleString()}</TableCell>
-                        <TableCell className={`font-bold ${offer.isWinner ? 'text-[#ea384c]' : ''}`}>
-                          ${offer.estimatedTakeHome.toLocaleString()}
+                        <TableCell className={`font-bold ${safeOffer.isWinner ? 'text-[#ea384c]' : ''}`}>
+                          ${safeOffer.estimatedTakeHome.toLocaleString()}
                         </TableCell>
                         <TableCell className="p-0 text-right">
                           <Button 
@@ -267,9 +337,8 @@ const ResultDisplay = ({ resultText }) => {
                 })}
               </TableBody>
             </Table>
-            <div className="p-4 flex justify-between items-center text-xs text-gray-500">
-              <div>* Estimates based on available tax data.</div>
-              <div>Report generated: {result.reportDate}</div>
+            <div className="p-4 text-xs text-gray-500">
+              * Estimates based on available tax data.
             </div>
           </CardContent>
         </Card>
@@ -284,12 +353,19 @@ const ResultDisplay = ({ resultText }) => {
         <CardTitle className="text-xl font-bold text-black">Contract Analysis Report</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="whitespace-pre-wrap bg-white p-6 rounded border border-gray-200 max-h-[500px] overflow-y-auto text-black">
-          {resultText}
-        </div>
+        {resultText ? (
+          <div className="whitespace-pre-wrap bg-white p-6 rounded border border-gray-200 max-h-[500px] overflow-y-auto text-black">
+            {resultText}
+          </div>
+        ) : (
+          <div className="p-6 text-center">
+            <p>No results to display. Please submit your contract information.</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 };
 
 export default ResultDisplay;
+
