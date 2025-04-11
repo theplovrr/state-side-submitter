@@ -75,11 +75,11 @@ const ResultDisplay = ({ resultText }) => {
                   <TableHead className="text-black">Cost of Living</TableHead>
                   <TableHead className="text-black">
                     <div className="flex items-center gap-1">
-                      Est. Taxes (Weekly)
-                      <TooltipProvider>
+                      Est. Taxes (Deducted Weekly)
+                      <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <HelpCircle className="h-3.5 w-3.5 text-gray-500" />
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-500 cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[250px] text-xs">
                             Includes estimated federal, state, and city taxes. See detailed report for full breakdown.
