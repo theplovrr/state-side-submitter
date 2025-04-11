@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -6,7 +7,7 @@ import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-import { X } from "lucide-react";
+import { X, Loader } from "lucide-react";
 import ComparisonToggle from "@/components/ComparisonToggle";
 
 const states = [
@@ -43,6 +44,7 @@ const locations = [
 const Index = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [resultText, setResultText] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -106,7 +108,13 @@ const Index = () => {
   const handleCompare = () => {
     if (!validateOffers()) return;
     
-    setStep(2);
+    setIsLoading(true);
+    
+    // Simulate transition delay
+    setTimeout(() => {
+      setStep(2);
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleEmailSubmit = (email: string) => {
@@ -127,26 +135,31 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setOffer1({
-      state: "",
-      salary: "",
-    });
+    setIsLoading(true);
     
-    setOffer2({
-      state: "",
-      salary: "",
-    });
-    
-    setOffer3({
-      state: "",
-      salary: "",
-    });
-    
-    setVisibleOffers(1);
-    setResultText("");
-    setUserEmail("");
-    setStep(1);
-    setCompareMode("states");
+    setTimeout(() => {
+      setOffer1({
+        state: "",
+        salary: "",
+      });
+      
+      setOffer2({
+        state: "",
+        salary: "",
+      });
+      
+      setOffer3({
+        state: "",
+        salary: "",
+      });
+      
+      setVisibleOffers(1);
+      setResultText("");
+      setUserEmail("");
+      setStep(1);
+      setCompareMode("states");
+      setIsLoading(false);
+    }, 500);
   };
 
   const addAnotherOffer = () => {
@@ -182,6 +195,17 @@ const Index = () => {
       ? "Type to search U.S. cities..." 
       : "Type to search U.S. states...";
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="h-12 w-12 animate-spin mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -287,7 +311,14 @@ const Index = () => {
                 disabled={isAnalyzing || !hasValidOffer()}
                 className="bg-white hover:bg-gray-50 text-black border border-black py-2 px-10 rounded-md text-base font-medium"
               >
-                Compare Now
+                {isAnalyzing ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  "Compare Now"
+                )}
               </Button>
             </div>
           </>
