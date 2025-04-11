@@ -199,12 +199,12 @@ const ResultDisplay = ({ resultText }) => {
               <TableHeader className="bg-gray-100">
                 <TableRow className="border-gray-200">
                   <TableHead className="text-black">Destination</TableHead>
-                  <TableHead className="text-black"><div className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-gray-600" /> Weekly Pay</div></TableHead>
-                  <TableHead className="text-black"><div className="flex items-center gap-1"><BadgeInfo className="h-4 w-4 text-gray-600" /> IRS Stipend Safe?</div></TableHead>
-                  <TableHead className="text-black"><div className="flex items-center gap-1"><Home className="h-4 w-4 text-gray-600" /> Cost of Living</div></TableHead>
+                  <TableHead className="text-black">Weekly Pay</TableHead>
+                  <TableHead className="text-black">IRS Stipend Safe?</TableHead>
+                  <TableHead className="text-black">Cost of Living</TableHead>
                   <TableHead className="text-black">
                     <div className="flex items-center gap-1">
-                      <BadgeDollarSign className="h-4 w-4 text-gray-600" /> Est. Taxes (Deducted Weekly)*
+                      Est. Taxes (Deducted Weekly)*
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -217,7 +217,7 @@ const ResultDisplay = ({ resultText }) => {
                       </TooltipProvider>
                     </div>
                   </TableHead>
-                  <TableHead className="text-black"><div className="flex items-center gap-1"><Wallet className="h-4 w-4 text-gray-600" /> Est. Take-Home (Weekly)</div></TableHead>
+                  <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
