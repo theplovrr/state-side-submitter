@@ -195,31 +195,22 @@ const ResultDisplay = ({ resultText }) => {
                             <div className="p-4 border-t border-gray-200">
                               <h4 className="font-medium text-gray-900 mb-3">Detailed Breakdown: {offer.state}</h4>
                               
-                              <div className="bg-white p-4 rounded-md border border-gray-200 space-y-3">
+                              <div className="bg-white p-4 rounded-md border border-gray-200">
                                 {/* Calculate tax breakdown */}
                                 {(() => {
                                   const { weeklyFederalTax, weeklyStateTax, weeklyCityTax, weeklyTotalTax } = 
                                     calculateTaxBreakdown(offer);
                                   
                                   return (
-                                    <>
-                                      <div className="grid grid-cols-2 gap-2 text-sm">
-                                        <div className="text-gray-600">Federal Tax (Weekly):</div>
-                                        <div className="font-medium text-right">${weeklyFederalTax.toLocaleString()}</div>
-                                        
-                                        <div className="text-gray-600">State Tax (Weekly):</div>
-                                        <div className="font-medium text-right">${weeklyStateTax.toLocaleString()}</div>
-                                        
-                                        <div className="text-gray-600">City Tax (Weekly):</div>
-                                        <div className="font-medium text-right">${weeklyCityTax.toLocaleString()}</div>
-                                        
-                                        <div className="text-gray-600 font-medium">Total Estimated Taxes (Weekly):</div>
-                                        <div className="font-bold text-right">${weeklyTotalTax.toLocaleString()}</div>
-                                        
-                                        <div className="text-gray-600 pt-2 border-t border-gray-200 font-medium">Weekly Take-Home Pay:</div>
-                                        <div className="font-bold text-right pt-2 border-t border-gray-200">${offer.estimatedTakeHome.toLocaleString()}</div>
-                                      </div>
-                                    </>
+                                    <div className="text-sm whitespace-pre-line">
+                                      <p className="font-medium text-gray-900">
+                                        Federal Tax (Weekly): ${weeklyFederalTax.toLocaleString()}{'\n'}
+                                        State Tax (Weekly): ${weeklyStateTax.toLocaleString()}{'\n'}
+                                        City Tax (Weekly): ${weeklyCityTax.toLocaleString()}{'\n'}
+                                        Total Estimated Taxes (Weekly): ${weeklyTotalTax.toLocaleString()}{'\n\n'}
+                                        Weekly Take-Home Pay: ${offer.estimatedTakeHome.toLocaleString()}
+                                      </p>
+                                    </div>
                                   );
                                 })()}
                               </div>
@@ -253,129 +244,69 @@ const ResultDisplay = ({ resultText }) => {
                 </div>
                 
                 <CollapsibleContent className="space-y-6 pt-2 animate-accordion-down">
-                  {result.offers.map((offer, index) => (
-                    <div 
-                      key={`detailed-offer-${index}`} 
-                      className={`p-5 rounded-lg border border-gray-200 shadow-sm ${offer.isWinner ? 'bg-yellow-50' : 'bg-white'}`}
-                    >
-                      <h3 className="text-xl font-bold mb-4 text-center">{offer.state} Detailed Report</h3>
-                      
-                      {/* Income Breakdown Section */}
-                      <div className={`mb-5 ${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
-                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                          Income Breakdown
-                        </h4>
-                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
-                          <table className="w-full text-sm">
-                            <tbody>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Weekly Salary:</td>
-                                <td className="py-2 font-medium text-right">${offer.weeklySalary.toLocaleString()}</td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Weekly Taxable Income:</td>
-                                <td className="py-2 font-medium text-right">${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Weekly Tax-Free Stipends:</td>
-                                <td className="py-2 font-medium text-right">${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Est. Weekly Taxes:</td>
-                                <td className="py-2 font-medium text-right">-${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52).toLocaleString()}</td>
-                              </tr>
-                              <tr>
-                                <td className="py-2 text-gray-700 font-semibold">Estimated Weekly Take-Home:</td>
-                                <td className="py-2 font-bold text-right text-green-700">${offer.estimatedTakeHome.toLocaleString()}</td>
-                              </tr>
-                            </tbody>
-                          </table>
+                  {result.offers.map((offer, index) => {
+                    const { weeklyFederalTax, weeklyStateTax, weeklyCityTax, weeklyTotalTax } = 
+                      calculateTaxBreakdown(offer);
+                    
+                    return (
+                      <div 
+                        key={`detailed-offer-${index}`} 
+                        className={`p-5 rounded-lg border border-gray-200 shadow-sm ${offer.isWinner ? 'bg-yellow-50' : 'bg-white'}`}
+                      >
+                        <h3 className="text-xl font-bold mb-4 text-center">{offer.state} Detailed Report</h3>
+                        
+                        <div className="space-y-4 whitespace-pre-line font-mono text-sm bg-gray-50 p-4 rounded border border-gray-200">
+                          <div className="mb-3">
+                            <p className="font-medium mb-2 flex items-center">
+                              <DollarSign className="h-5 w-5 text-green-600 inline mr-2" />
+                              INCOME BREAKDOWN:
+                            </p>
+                            <p>
+                              Weekly Salary: ${offer.weeklySalary.toLocaleString()}{'\n'}
+                              Weekly Taxable Income: ${Math.round(offer.weeklySalary * 0.6).toLocaleString()}{'\n'}
+                              Weekly Tax-Free Stipends: ${Math.round(offer.weeklySalary * 0.4).toLocaleString()}{'\n'}
+                              Est. Weekly Taxes: -${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52).toLocaleString()}{'\n'}
+                              Estimated Weekly Take-Home: ${offer.estimatedTakeHome.toLocaleString()}
+                            </p>
+                          </div>
+                          
+                          <div className="mb-3">
+                            <p className="font-medium mb-2 flex items-center">
+                              <Home className="h-5 w-5 text-blue-600 inline mr-2" />
+                              COST OF LIVING ESTIMATE:
+                            </p>
+                            <p>
+                              Classification: {offer.costOfLiving}{'\n'}
+                              Est. Monthly Housing: ${offer.costOfLiving === "Low" ? "1,200" : 
+                                offer.costOfLiving === "Medium" ? "1,800" : 
+                                "2,600"}{'\n'}
+                              Est. Monthly Expenses: ${offer.costOfLiving === "Low" ? "800" : 
+                                offer.costOfLiving === "Medium" ? "1,200" : 
+                                "1,800"}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <p className="font-medium mb-2 flex items-center">
+                              <Calculator className="h-5 w-5 text-purple-600 inline mr-2" />
+                              3-MONTH CONTRACT SUMMARY:
+                            </p>
+                            <p>
+                              13-Week Gross Income: ${(offer.weeklySalary * 13).toLocaleString()}{'\n'}
+                              13-Week Est. Taxes: -${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 4).toLocaleString()}{'\n'}
+                              13-Week Est. Living Costs: -${offer.costOfLiving === "Low" ? "6,500" : 
+                                offer.costOfLiving === "Medium" ? "9,750" : 
+                                "14,300"}{'\n'}
+                              Estimated Savings (13 Weeks): ${Math.round((offer.estimatedTakeHome * 13) - 
+                                (offer.costOfLiving === "Low" ? 6500 : 
+                                  offer.costOfLiving === "Medium" ? 9750 : 
+                                  14300)).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Cost of Living Section */}
-                      <div className={`mb-5 ${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
-                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
-                          <Home className="h-5 w-5 text-blue-600" />
-                          Cost of Living Estimate
-                        </h4>
-                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
-                          <table className="w-full text-sm">
-                            <tbody>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Classification:</td>
-                                <td className="py-2 font-medium text-right">
-                                  <Badge className={
-                                    offer.costOfLiving === "Low" ? "bg-green-100 text-green-800" : 
-                                    offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800" : 
-                                    "bg-red-100 text-red-800"
-                                  }>
-                                    {offer.costOfLiving}
-                                  </Badge>
-                                </td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">Est. Monthly Housing:</td>
-                                <td className="py-2 font-medium text-right">
-                                  ${offer.costOfLiving === "Low" ? "1,200" : 
-                                    offer.costOfLiving === "Medium" ? "1,800" : 
-                                    "2,600"}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="py-2 text-gray-600">Est. Monthly Expenses:</td>
-                                <td className="py-2 font-medium text-right">
-                                  ${offer.costOfLiving === "Low" ? "800" : 
-                                    offer.costOfLiving === "Medium" ? "1,200" : 
-                                    "1,800"}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      
-                      {/* 3-Month Contract Summary */}
-                      <div className={`${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
-                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
-                          <Calculator className="h-5 w-5 text-purple-600" />
-                          3-Month Contract Summary
-                        </h4>
-                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
-                          <table className="w-full text-sm">
-                            <tbody>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">13-Week Gross Income:</td>
-                                <td className="py-2 font-medium text-right">${(offer.weeklySalary * 13).toLocaleString()}</td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">13-Week Est. Taxes:</td>
-                                <td className="py-2 font-medium text-right">-${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 4).toLocaleString()}</td>
-                              </tr>
-                              <tr className="border-b border-gray-200">
-                                <td className="py-2 text-gray-600">13-Week Est. Living Costs:</td>
-                                <td className="py-2 font-medium text-right">
-                                  -${offer.costOfLiving === "Low" ? "6,500" : 
-                                     offer.costOfLiving === "Medium" ? "9,750" : 
-                                     "14,300"}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="py-2 text-gray-700 font-semibold">Estimated Savings (13 Weeks):</td>
-                                <td className="py-2 font-bold text-right text-green-700 bg-green-50 px-2 rounded">
-                                  ${Math.round((offer.estimatedTakeHome * 13) - 
-                                    (offer.costOfLiving === "Low" ? 6500 : 
-                                     offer.costOfLiving === "Medium" ? 9750 : 
-                                     14300)).toLocaleString()}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </CollapsibleContent>
               </Collapsible>
             </div>
