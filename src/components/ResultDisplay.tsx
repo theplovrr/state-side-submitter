@@ -1,7 +1,7 @@
 
 import { useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Trophy, HelpCircle, ChevronDown, ChevronUp, DollarSign, Home, Calculator } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -109,95 +109,9 @@ const ResultDisplay = ({ resultText }) => {
                 })}
               </div>
             </div>
-            
-            <h3 className="text-lg font-bold mb-4 border-b border-gray-200 pb-2">DETAILED BREAKDOWN</h3>
-            
-            <div className="space-y-6 mb-4">
-              {result.offers.map((offer, i) => {
-                // Calculate tax breakdown
-                const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
-                const federalTax = Math.round(totalTaxAmount * 0.6);
-                const stateTax = Math.round(totalTaxAmount * 0.35);
-                const cityTax = Math.round(totalTaxAmount * 0.05);
-                
-                const weeklyFedTax = Math.round(federalTax / 52);
-                const weeklyStateTax = Math.round(stateTax / 52);
-                const weeklyCityTax = Math.round(cityTax / 52);
-                
-                return (
-                  <div 
-                    key={`details-${i}`} 
-                    className={`p-4 rounded-lg border ${offer.isWinner ? 'bg-yellow-50 border-[#ea384c]' : 'border-gray-200'}`}
-                  >
-                    <div className={`text-base font-bold pb-2 mb-3 border-b ${offer.isWinner ? 'text-[#ea384c] border-[#ea384c]' : 'border-gray-200'}`}>
-                      CONTRACT {i+1}: {offer.state.toUpperCase()}
-                      {offer.isWinner && (
-                        <span className="ml-2 inline-flex items-center bg-yellow-100 text-black text-xs px-2 py-0.5 rounded">
-                          <Trophy className="h-3 w-3 mr-1" /> WINNER
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <div className="mb-2"><span className="font-semibold">Weekly Salary:</span> ${offer.weeklySalary.toLocaleString()}</div>
-                        <div className="mb-2"><span className="font-semibold">Weekly Taxable Income:</span> ${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</div>
-                        <div className="mb-2"><span className="font-semibold">Weekly Tax-Free Stipends:</span> ${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</div>
-                      </div>
-                      <div>
-                        <div className="mb-2"><span className="font-semibold">IRS Stipend Safe:</span> 
-                          <Badge className={`ml-2 ${offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
-                            {offer.irsStipendSafe}
-                          </Badge>
-                        </div>
-                        <div className="mb-2"><span className="font-semibold">Cost of Living:</span> 
-                          <Badge className={`ml-2 ${
-                            offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                            offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
-                            "bg-red-100 text-red-800 border-red-200"
-                          }`}>
-                            {offer.costOfLiving}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <div className="font-semibold mb-2">Cost Breakdown:</div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4">
-                        <div>• Monthly Housing: ${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
-                        <div>• Monthly Expenses: ${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <div className="font-semibold mb-2">Taxes (Weekly):</div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 pl-4">
-                        <div className="mb-1">• Federal: ${weeklyFedTax.toLocaleString()}</div>
-                        <div className="mb-1">• State: ${weeklyStateTax.toLocaleString()}</div>
-                        <div className="mb-1">• City: ${weeklyCityTax.toLocaleString()}</div>
-                        <div className="font-semibold">• TOTAL: ${Math.round(weeklyFedTax + weeklyStateTax + weeklyCityTax).toLocaleString()}</div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="font-semibold mb-2">13-Week Contract Summary:</div>
-                      <div className="pl-4">
-                        <div className="mb-1">• Gross Income: ${(offer.weeklySalary * 13).toLocaleString()}</div>
-                        <div className="mb-1">• Est. Taxes: -${Math.round(totalTaxAmount / 4).toLocaleString()}</div>
-                        <div className="mb-1">• Est. Living Costs: -${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}</div>
-                        <div className="font-bold text-lg">
-                          • Estimated Savings: ${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
 
-            <Table className="border-collapse w-full mb-4">
-              <TableHeader className="bg-gray-50">
+            <Table className="border-collapse w-full mb-4 bg-gray-50 rounded-lg overflow-hidden">
+              <TableHeader className="bg-gray-100">
                 <TableRow className="border-gray-200">
                   <TableHead className="text-black">Destination</TableHead>
                   <TableHead className="text-black">Weekly Pay</TableHead>
@@ -265,6 +179,136 @@ const ResultDisplay = ({ resultText }) => {
                 })}
               </TableBody>
             </Table>
+            
+            <Collapsible
+              open={isDetailsOpen}
+              onOpenChange={setIsDetailsOpen}
+              className="w-full space-y-2"
+            >
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center gap-1 bg-gray-50 border border-gray-200 hover:bg-gray-100 py-2 px-4 rounded-md transition-colors"
+                >
+                  {isDetailsOpen ? (
+                    <>
+                      <ChevronUp className="h-4 w-4" />
+                      <span>Hide Detailed Breakdown</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4" />
+                      <span>Show Detailed Breakdown</span>
+                    </>
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="space-y-4 pt-4 animate-accordion-down">
+                <h3 className="text-lg font-bold border-b border-gray-200 pb-2">DETAILED BREAKDOWN</h3>
+                
+                <div className="space-y-6">
+                  {result.offers.map((offer, i) => {
+                    // Calculate tax breakdown
+                    const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
+                    const federalTax = Math.round(totalTaxAmount * 0.6);
+                    const stateTax = Math.round(totalTaxAmount * 0.35);
+                    const cityTax = Math.round(totalTaxAmount * 0.05);
+                    
+                    const weeklyFedTax = Math.round(federalTax / 52);
+                    const weeklyStateTax = Math.round(stateTax / 52);
+                    const weeklyCityTax = Math.round(cityTax / 52);
+                    
+                    return (
+                      <div 
+                        key={`details-${i}`} 
+                        className={`p-4 rounded-lg border ${offer.isWinner ? 'bg-yellow-50 border-[#ea384c]' : 'border-gray-200'}`}
+                      >
+                        <div className={`text-base font-bold pb-2 mb-3 border-b ${offer.isWinner ? 'text-[#ea384c] border-[#ea384c]' : 'border-gray-200'}`}>
+                          CONTRACT {i+1}: {offer.state.toUpperCase()}
+                          {offer.isWinner && (
+                            <span className="ml-2 inline-flex items-center bg-yellow-100 text-black text-xs px-2 py-0.5 rounded">
+                              <Trophy className="h-3 w-3 mr-1" /> WINNER
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <div className="bg-white p-3 rounded-md border border-gray-200">
+                            <div className="flex items-center gap-2 font-semibold mb-2 text-gray-700">
+                              <DollarSign className="h-4 w-4" />
+                              Income Breakdown
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                              <div className="space-y-1">
+                                <div><span className="font-medium">Weekly Salary:</span> ${offer.weeklySalary.toLocaleString()}</div>
+                                <div><span className="font-medium">Weekly Taxable Income:</span> ${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</div>
+                                <div><span className="font-medium">Weekly Tax-Free Stipends:</span> ${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</div>
+                              </div>
+                              <div className="space-y-1">
+                                <div><span className="font-medium">IRS Stipend Safe:</span> 
+                                  <Badge className={`ml-2 ${offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
+                                    {offer.irsStipendSafe}
+                                  </Badge>
+                                </div>
+                                <div><span className="font-medium">Cost of Living:</span> 
+                                  <Badge className={`ml-2 ${
+                                    offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                                    offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                                    "bg-red-100 text-red-800 border-red-200"
+                                  }`}>
+                                    {offer.costOfLiving}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-white p-3 rounded-md border border-gray-200">
+                            <div className="flex items-center gap-2 font-semibold mb-2 text-gray-700">
+                              <Home className="h-4 w-4" />
+                              Cost of Living
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                              <div>• Monthly Housing: ${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
+                              <div>• Monthly Expenses: ${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-white p-3 rounded-md border border-gray-200">
+                            <div className="flex items-center gap-2 font-semibold mb-2 text-gray-700">
+                              <DollarSign className="h-4 w-4" />
+                              Taxes (Weekly)
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 pl-6">
+                              <div className="mb-1">• Federal: ${weeklyFedTax.toLocaleString()}</div>
+                              <div className="mb-1">• State: ${weeklyStateTax.toLocaleString()}</div>
+                              <div className="mb-1">• City: ${weeklyCityTax.toLocaleString()}</div>
+                              <div className="font-semibold">• TOTAL: ${Math.round(weeklyFedTax + weeklyStateTax + weeklyCityTax).toLocaleString()}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-white p-3 rounded-md border border-gray-200">
+                            <div className="flex items-center gap-2 font-semibold mb-2 text-gray-700">
+                              <Calculator className="h-4 w-4" />
+                              13-Week Contract Summary
+                            </div>
+                            <div className="pl-6">
+                              <div className="mb-1">• Gross Income: ${(offer.weeklySalary * 13).toLocaleString()}</div>
+                              <div className="mb-1">• Est. Taxes: -${Math.round(totalTaxAmount / 4).toLocaleString()}</div>
+                              <div className="mb-1">• Est. Living Costs: -${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}</div>
+                              <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md text-green-800 font-bold">
+                                • Estimated Savings: ${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
             
             <div className="text-xs text-gray-500 pt-3 border-t border-gray-200 flex justify-between">
               <div>
