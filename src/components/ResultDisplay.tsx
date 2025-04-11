@@ -92,20 +92,34 @@ const ResultDisplay = ({ resultText }) => {
                   <TableHead className="text-black">Cost of Living</TableHead>
                   <TableHead className="text-black">
                     <div className="flex items-center gap-1">
-                      Est. Taxes (Deducted Weekly)
+                      Est. Taxes (Deducted Weekly)*
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <HelpCircle className="h-3.5 w-3.5 text-gray-500 cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[250px] text-xs">
-                            Includes estimated federal, state, and city taxes. See detailed report for full breakdown.
+                            Estimates based on available tax data. For your exact taxes, consult your tax professional.
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                   </TableHead>
-                  <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
+                  <TableHead className="text-black">
+                    <div className="flex items-center gap-1">
+                      Est. Take-Home (Weekly)*
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-500 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[250px] text-xs">
+                            Estimates based on available tax data. For your exact taxes, consult your tax professional.
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </TableHead>
                   <TableHead className="text-black"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -217,7 +231,7 @@ Estimated Savings (13 Weeks): $${Math.round((offer.estimatedTakeHome * 13) - (of
               </TableBody>
             </Table>
             
-            {/* Collapsible detailed report section with simple text output */}
+            {/* Collapsible detailed report section with raw text output */}
             <div className="mt-6">
               <Collapsible
                 open={isDetailsOpen}
@@ -237,79 +251,95 @@ Estimated Savings (13 Weeks): $${Math.round((offer.estimatedTakeHome * 13) - (of
                 </div>
                 
                 <CollapsibleContent className="space-y-6 pt-2 animate-accordion-down">
-                  <div className="font-mono text-sm bg-gray-50 p-6 rounded-lg border border-gray-200 whitespace-pre-line">
-                    {(() => {
-                      // Generate a ChatGPT-style text output for all contracts
-                      let output = `CONTRACT ANALYSIS REPORT\n\n`;
-                      
-                      if (winningOffer) {
-                        output += `WINNER: ${winningOffer.state} - $${winningOffer.estimatedTakeHome.toLocaleString()} weekly take-home\n\n`;
-                      }
-                      
-                      output += `COMPARISON SUMMARY:\n`;
-                      result.offers.forEach((offer, i) => {
-                        const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
-                        output += `${i+1}. ${offer.state}: $${offer.weeklySalary.toLocaleString()} weekly salary, $${Math.round(weeklyTaxes).toLocaleString()} taxes, $${offer.estimatedTakeHome.toLocaleString()} take-home${offer.isWinner ? ' (BEST OFFER)' : ''}\n`;
-                      });
-                      
-                      output += `\nDETAILED BREAKDOWN:\n\n`;
-                      
-                      result.offers.forEach((offer, i) => {
-                        // Calculate tax breakdown
-                        const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
-                        const federalTax = Math.round(totalTaxAmount * 0.6);
-                        const stateTax = Math.round(totalTaxAmount * 0.35);
-                        const cityTax = Math.round(totalTaxAmount * 0.05);
-                        
-                        // Weekly amounts
-                        const weeklyFederalTax = Math.round(federalTax / 52);
-                        const weeklyStateTax = Math.round(stateTax / 52);
-                        const weeklyCityTax = Math.round(cityTax / 52);
-                        
-                        output += `CONTRACT ${i+1}: ${offer.state.toUpperCase()}${offer.isWinner ? ' (WINNER)' : ''}\n`;
-                        output += `------------------------------------------\n`;
-                        output += `Weekly Salary: $${offer.weeklySalary.toLocaleString()}\n`;
-                        output += `Weekly Taxable Income: $${Math.round(offer.weeklySalary * 0.6).toLocaleString()}\n`;
-                        output += `Weekly Tax-Free Stipends: $${Math.round(offer.weeklySalary * 0.4).toLocaleString()}\n`;
-                        output += `IRS Stipend Safe: ${offer.irsStipendSafe}\n\n`;
-                        
-                        output += `Cost of Living: ${offer.costOfLiving}\n`;
-                        output += `Est. Monthly Housing: $${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}\n`;
-                        output += `Est. Monthly Expenses: $${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}\n\n`;
-                        
-                        output += `Taxes (Weekly):\n`;
-                        output += `- Federal: $${weeklyFederalTax.toLocaleString()}\n`;
-                        output += `- State: $${weeklyStateTax.toLocaleString()}\n`;
-                        output += `- City: $${weeklyCityTax.toLocaleString()}\n`;
-                        output += `- TOTAL: $${Math.round(weeklyFederalTax + weeklyStateTax + weeklyCityTax).toLocaleString()}\n\n`;
-                        
-                        output += `13-Week Contract Summary:\n`;
-                        output += `- Gross Income: $${(offer.weeklySalary * 13).toLocaleString()}\n`;
-                        output += `- Est. Taxes: -$${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 4).toLocaleString()}\n`;
-                        output += `- Est. Living Costs: -$${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}\n`;
-                        output += `- Estimated Savings: $${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}\n\n`;
-                        
-                        if (i < result.offers.length - 1) {
-                          output += `\n`;
-                        }
-                      });
-                      
-                      output += `\nReport generated: ${result.reportDate}\n`;
-                      output += `DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.`;
-                      
-                      return output;
-                    })()}
+                  <div className="font-mono text-sm bg-gray-50 p-6 rounded-lg border border-gray-200 whitespace-pre-line overflow-x-auto">
+                    {/* Display the raw text with font styling for bold headings */}
+                    {result.textReport ? (
+                      <div dangerouslySetInnerHTML={{ 
+                        __html: result.textReport
+                          // Bold the key headings
+                          .replace(/^(WINNER:.*)/gm, '<strong>$1</strong>')
+                          .replace(/^(COMPARISON SUMMARY:)/gm, '<strong>$1</strong>')
+                          .replace(/^(DETAILED BREAKDOWN:)/gm, '<strong>$1</strong>')
+                          .replace(/^(CONTRACT \d+:.*(\(WINNER\))?)/gm, '<strong>$1</strong>')
+                          .replace(/^(Report generated:.*)/gm, '<em>$1</em>')
+                          .replace(/^(DISCLAIMER:.*)/gm, '<em>$1</em>')
+                          // Add spacing between sections
+                          .replace(/^--+$/gm, '<hr class="border-gray-200 my-2">')
+                      }} />
+                    ) : (
+                      // Fallback raw text without formatting if no HTML is provided
+                      <>
+                        {(() => {
+                          // Generate a ChatGPT-style text output for all contracts
+                          let output = `<strong>CONTRACT ANALYSIS REPORT</strong>\n\n`;
+                          
+                          if (winningOffer) {
+                            output += `<strong>WINNER: ${winningOffer.state} - $${winningOffer.estimatedTakeHome.toLocaleString()} weekly take-home</strong>\n\n`;
+                          }
+                          
+                          output += `<strong>COMPARISON SUMMARY:</strong>\n`;
+                          result.offers.forEach((offer, i) => {
+                            const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
+                            output += `${i+1}. ${offer.state}: $${offer.weeklySalary.toLocaleString()} weekly salary, $${Math.round(weeklyTaxes).toLocaleString()} taxes, $${offer.estimatedTakeHome.toLocaleString()} take-home${offer.isWinner ? ' (BEST OFFER)' : ''}\n`;
+                          });
+                          
+                          output += `\n<strong>DETAILED BREAKDOWN:</strong>\n\n`;
+                          
+                          result.offers.forEach((offer, i) => {
+                            // Calculate tax breakdown
+                            const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
+                            const federalTax = Math.round(totalTaxAmount * 0.6);
+                            const stateTax = Math.round(totalTaxAmount * 0.35);
+                            const cityTax = Math.round(totalTaxAmount * 0.05);
+                            
+                            // Weekly amounts
+                            const weeklyFederalTax = Math.round(federalTax / 52);
+                            const weeklyStateTax = Math.round(stateTax / 52);
+                            const weeklyCityTax = Math.round(cityTax / 52);
+                            
+                            output += `<strong>CONTRACT ${i+1}: ${offer.state.toUpperCase()}${offer.isWinner ? ' (WINNER)' : ''}</strong>\n`;
+                            output += `<hr class="border-gray-200 my-2">\n`;
+                            output += `Weekly Salary: $${offer.weeklySalary.toLocaleString()}\n`;
+                            output += `Weekly Taxable Income: $${Math.round(offer.weeklySalary * 0.6).toLocaleString()}\n`;
+                            output += `Weekly Tax-Free Stipends: $${Math.round(offer.weeklySalary * 0.4).toLocaleString()}\n`;
+                            output += `IRS Stipend Safe: ${offer.irsStipendSafe}\n\n`;
+                            
+                            output += `Cost of Living: ${offer.costOfLiving}\n`;
+                            output += `Est. Monthly Housing: $${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}\n`;
+                            output += `Est. Monthly Expenses: $${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}\n\n`;
+                            
+                            output += `Taxes (Weekly):\n`;
+                            output += `- Federal: $${weeklyFederalTax.toLocaleString()}\n`;
+                            output += `- State: $${weeklyStateTax.toLocaleString()}\n`;
+                            output += `- City: $${weeklyCityTax.toLocaleString()}\n`;
+                            output += `- TOTAL: $${Math.round(weeklyFederalTax + weeklyStateTax + weeklyCityTax).toLocaleString()}\n\n`;
+                            
+                            output += `13-Week Contract Summary:\n`;
+                            output += `- Gross Income: $${(offer.weeklySalary * 13).toLocaleString()}\n`;
+                            output += `- Est. Taxes: -$${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 4).toLocaleString()}\n`;
+                            output += `- Est. Living Costs: -$${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}\n`;
+                            output += `- Estimated Savings: $${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}\n\n`;
+                            
+                            if (i < result.offers.length - 1) {
+                              output += `\n`;
+                            }
+                          });
+                          
+                          output += `\n<em>Report generated: ${result.reportDate}</em>\n`;
+                          output += `<em>DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.</em>`;
+                          
+                          return <div dangerouslySetInnerHTML={{ __html: output }} />;
+                        })()}
+                      </>
+                    )}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>
             
-            <div className="mt-4 text-xs text-gray-500 flex flex-col gap-2">
+            <div className="mt-4 text-xs text-gray-500 flex justify-end">
               <div className="text-right">
                 Report generated: {result.reportDate}
-              </div>
-              <div className="p-3 bg-gray-50 border border-gray-200 rounded text-center">
-                These are estimates based on available tax data. For your exact taxes, consult your tax professional.
               </div>
             </div>
           </CardContent>
@@ -337,3 +367,4 @@ Estimated Savings (13 Weeks): $${Math.round((offer.estimatedTakeHome * 13) - (of
 };
 
 export default ResultDisplay;
+
