@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, HelpCircle, ChevronDown, ChevronUp, DollarSign, Home, Calculator } from "lucide-react";
+import { Trophy, HelpCircle, ChevronDown, ChevronUp, DollarSign, Home, Calculator, Briefcase, Building, MapPin, Wallet, BadgePercent, BadgeDollarSign, BadgeInfo } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -158,7 +158,7 @@ const ResultDisplay = ({ resultText }) => {
         <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
           <CardHeader className="bg-white border-b border-gray-200 p-4">
             <CardTitle className="text-xl font-bold text-black">
-              Offer Analysis
+              Contract Comparison Summary
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -191,7 +191,7 @@ const ResultDisplay = ({ resultText }) => {
         <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4" id="report-content">
           <CardHeader className="bg-white border-b border-gray-200 p-4">
             <CardTitle className="text-xl font-bold text-black">
-              Contract Comparison
+              Contract Comparison Summary
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -199,12 +199,12 @@ const ResultDisplay = ({ resultText }) => {
               <TableHeader className="bg-gray-100">
                 <TableRow className="border-gray-200">
                   <TableHead className="text-black">Destination</TableHead>
-                  <TableHead className="text-black">Weekly Pay</TableHead>
-                  <TableHead className="text-black">IRS Stipend Safe?</TableHead>
-                  <TableHead className="text-black">Cost of Living</TableHead>
+                  <TableHead className="text-black"><div className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-gray-600" /> Weekly Pay</div></TableHead>
+                  <TableHead className="text-black"><div className="flex items-center gap-1"><BadgeInfo className="h-4 w-4 text-gray-600" /> IRS Stipend Safe?</div></TableHead>
+                  <TableHead className="text-black"><div className="flex items-center gap-1"><Home className="h-4 w-4 text-gray-600" /> Cost of Living</div></TableHead>
                   <TableHead className="text-black">
                     <div className="flex items-center gap-1">
-                      Est. Taxes (Deducted Weekly)*
+                      <BadgeDollarSign className="h-4 w-4 text-gray-600" /> Est. Taxes (Deducted Weekly)*
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -217,7 +217,7 @@ const ResultDisplay = ({ resultText }) => {
                       </TooltipProvider>
                     </div>
                   </TableHead>
-                  <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
+                  <TableHead className="text-black"><div className="flex items-center gap-1"><Wallet className="h-4 w-4 text-gray-600" /> Est. Take-Home (Weekly)</div></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -240,6 +240,7 @@ const ResultDisplay = ({ resultText }) => {
                     <TableRow key={`offer-${index}`} isWinner={safeOffer.isWinner}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-gray-600" />
                           {safeOffer.state}
                           {safeOffer.isWinner && (
                             <Badge className="bg-yellow-500 text-black">
@@ -305,9 +306,141 @@ const ResultDisplay = ({ resultText }) => {
                 
                 <CollapsibleContent className="animate-accordion-down mt-4">
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-auto">
-                    <pre className="whitespace-pre-wrap font-mono text-sm">
-                      {formatDetailedBreakdown()}
-                    </pre>
+                    <div className="font-sans text-sm space-y-6">
+                      {result.offers.map((offer, index) => {
+                        if (!offer) return null;
+                        
+                        const salary = offer.weeklySalary || 0;
+                        const costOfLiving = offer.costOfLiving || "Medium";
+                        const taxSafe = offer.irsStipendSafe || "No";
+                        
+                        // Calculate tax breakdown
+                        const totalTaxAmount = parseInt((offer.totalTaxes || "$0").replace(/[^0-9.-]+/g, "")) || 0;
+                        const weeklyTaxes = Math.round(totalTaxAmount / 52);
+                        const federalTax = Math.round(totalTaxAmount * 0.6 / 52);
+                        const stateTax = Math.round(totalTaxAmount * 0.35 / 52);
+                        const cityTax = Math.round(totalTaxAmount * 0.05 / 52);
+                        
+                        // Calculate monthly expenses based on cost of living
+                        const monthlyHousing = costOfLiving === "Low" ? 1200 : costOfLiving === "Medium" ? 1800 : 2600;
+                        const monthlyExpenses = costOfLiving === "Low" ? 800 : costOfLiving === "Medium" ? 1200 : 1800;
+                        
+                        // Calculate contract summary
+                        const grossIncomeForThreeMonths = salary * 13;
+                        const taxesForThreeMonths = Math.round(totalTaxAmount / 4);
+                        const takeHomeForThreeMonths = offer.estimatedTakeHome * 13;
+                        
+                        return (
+                          <div key={`detail-${index}`} className="pb-4 border-b border-gray-200 last:border-0">
+                            <h3 className="font-bold text-lg mb-3 flex items-center">
+                              <MapPin className="h-5 w-5 mr-2" />
+                              CONTRACT: {offer.state.toUpperCase()}
+                              {offer.isWinner && (
+                                <Badge className="ml-2 bg-yellow-500 text-black">
+                                  <Trophy className="h-3 w-3 mr-1" /> Winner!
+                                </Badge>
+                              )}
+                            </h3>
+                            
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="space-y-3">
+                                <div>
+                                  <h4 className="font-semibold flex items-center"><DollarSign className="h-4 w-4 mr-1" /> Salary Information</h4>
+                                  <ul className="ml-6 space-y-1">
+                                    <li className="flex justify-between">
+                                      <span>Weekly Salary:</span>
+                                      <span className="font-mono">${salary.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>Weekly Taxable Income:</span>
+                                      <span className="font-mono">${Math.round(salary * 0.6).toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>Weekly Tax-Free Stipends:</span>
+                                      <span className="font-mono">${Math.round(salary * 0.4).toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>IRS Stipend Safe:</span>
+                                      <span>
+                                        <Badge className={taxSafe === "Yes" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                                          {taxSafe}
+                                        </Badge>
+                                      </span>
+                                    </li>
+                                  </ul>
+                                </div>
+                                
+                                <div>
+                                  <h4 className="font-semibold flex items-center"><Home className="h-4 w-4 mr-1" /> Cost of Living</h4>
+                                  <ul className="ml-6 space-y-1">
+                                    <li className="flex justify-between">
+                                      <span>Rating:</span>
+                                      <Badge className={
+                                        costOfLiving === "Low" ? "bg-green-100 text-green-800" : 
+                                        costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800" : 
+                                        "bg-red-100 text-red-800"
+                                      }>
+                                        {costOfLiving}
+                                      </Badge>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>Est. Monthly Housing:</span>
+                                      <span className="font-mono">${monthlyHousing.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>Est. Monthly Expenses:</span>
+                                      <span className="font-mono">${monthlyExpenses.toLocaleString()}</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-3">
+                                <div>
+                                  <h4 className="font-semibold flex items-center"><Calculator className="h-4 w-4 mr-1" /> Taxes (Weekly)</h4>
+                                  <ul className="ml-6 space-y-1">
+                                    <li className="flex justify-between">
+                                      <span>Federal:</span>
+                                      <span className="font-mono">${federalTax.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>State:</span>
+                                      <span className="font-mono">${stateTax.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>City/Local:</span>
+                                      <span className="font-mono">${cityTax.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between font-semibold">
+                                      <span>TOTAL:</span>
+                                      <span className="font-mono">${weeklyTaxes.toLocaleString()}</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                                
+                                <div>
+                                  <h4 className="font-semibold flex items-center"><Briefcase className="h-4 w-4 mr-1" /> 13-Week Contract Summary</h4>
+                                  <ul className="ml-6 space-y-1">
+                                    <li className="flex justify-between">
+                                      <span>Gross Income:</span>
+                                      <span className="font-mono">${grossIncomeForThreeMonths.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between">
+                                      <span>Est. Taxes:</span>
+                                      <span className="font-mono">${taxesForThreeMonths.toLocaleString()}</span>
+                                    </li>
+                                    <li className="flex justify-between font-semibold">
+                                      <span>Est. Take-Home:</span>
+                                      <span className="font-mono text-green-600">${takeHomeForThreeMonths.toLocaleString()}</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
