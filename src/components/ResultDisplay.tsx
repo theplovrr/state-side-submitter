@@ -162,141 +162,134 @@ const ResultDisplay = ({ resultText }) => {
                 
                 <CollapsibleContent className="space-y-6 pt-2 animate-accordion-down">
                   <div className="bg-white p-6 rounded-lg border border-gray-200 overflow-x-auto leading-relaxed">
-                    {result.textReport ? (
-                      <div>
-                        {/* Custom formatted version that matches the table style */}
-                        <div className="text-xl font-bold border-b border-gray-200 pb-3 mb-4">Detailed Contract Analysis Report</div>
-                        
-                        {winningOffer && (
-                          <div className="flex items-center mb-6 border-b border-gray-200 pb-3">
-                            <span className="text-lg font-bold text-[#ea384c] mr-2">WINNER:</span>
-                            <span className="text-lg font-semibold">{winningOffer.state} - </span>
-                            <span className="text-lg font-bold text-[#ea384c] ml-1">${winningOffer.estimatedTakeHome.toLocaleString()} weekly take-home</span>
-                          </div>
-                        )}
-                        
-                        <div className="mb-6">
-                          <div className="text-lg font-bold mb-3 border-b border-gray-200 pb-2">COMPARISON SUMMARY</div>
-                          <div className="space-y-2">
-                            {result.offers.map((offer, i) => {
-                              const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
-                              return (
-                                <div key={`summary-${i}`} className={`py-2 px-3 rounded-md ${offer.isWinner ? 'bg-yellow-50 border-l-4 border-[#ea384c]' : ''}`}>
-                                  <span className={`font-semibold ${offer.isWinner ? 'text-[#ea384c]' : ''}`}>{i+1}. {offer.state}: </span>
-                                  <span>${offer.weeklySalary.toLocaleString()} weekly salary, </span>
-                                  <span>${Math.round(weeklyTaxes).toLocaleString()} taxes, </span>
-                                  <span className={`font-bold ${offer.isWinner ? 'text-[#ea384c]' : ''}`}>
-                                    ${offer.estimatedTakeHome.toLocaleString()} take-home
+                    <div>
+                      {/* Custom formatted version that matches the table style */}
+                      <div className="text-xl font-bold border-b border-gray-200 pb-3 mb-4">Detailed Contract Analysis Report</div>
+                      
+                      {winningOffer && (
+                        <div className="flex items-center mb-6 border-b border-gray-200 pb-3">
+                          <span className="text-lg font-bold text-[#ea384c] mr-2">WINNER:</span>
+                          <span className="text-lg font-semibold">{winningOffer.state} - </span>
+                          <span className="text-lg font-bold text-[#ea384c] ml-1">${winningOffer.estimatedTakeHome.toLocaleString()} weekly take-home</span>
+                        </div>
+                      )}
+                      
+                      <div className="mb-6">
+                        <div className="text-lg font-bold mb-3 border-b border-gray-200 pb-2">COMPARISON SUMMARY</div>
+                        <div className="space-y-2">
+                          {result.offers.map((offer, i) => {
+                            const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
+                            return (
+                              <div key={`summary-${i}`} className={`py-2 px-3 rounded-md ${offer.isWinner ? 'bg-yellow-50 border-l-4 border-[#ea384c]' : ''}`}>
+                                <span className={`font-semibold ${offer.isWinner ? 'text-[#ea384c]' : ''}`}>{i+1}. {offer.state}: </span>
+                                <span>${offer.weeklySalary.toLocaleString()} weekly salary, </span>
+                                <span>${Math.round(weeklyTaxes).toLocaleString()} taxes, </span>
+                                <span className={`font-bold ${offer.isWinner ? 'text-[#ea384c]' : ''}`}>
+                                  ${offer.estimatedTakeHome.toLocaleString()} take-home
+                                </span>
+                                {offer.isWinner && (
+                                  <span className="ml-2 inline-flex items-center bg-yellow-100 text-black text-xs px-2 py-0.5 rounded">
+                                    <Trophy className="h-3 w-3 mr-1" /> BEST OFFER
                                   </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      <div className="mb-6">
+                        <div className="text-lg font-bold mb-4 border-b border-gray-200 pb-2">DETAILED BREAKDOWN</div>
+                        
+                        <div className="space-y-6">
+                          {result.offers.map((offer, i) => {
+                            // Calculate tax breakdown
+                            const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
+                            const federalTax = Math.round(totalTaxAmount * 0.6);
+                            const stateTax = Math.round(totalTaxAmount * 0.35);
+                            const cityTax = Math.round(totalTaxAmount * 0.05);
+                            
+                            const weeklyFedTax = Math.round(federalTax / 52);
+                            const weeklyStateTax = Math.round(stateTax / 52);
+                            const weeklyCityTax = Math.round(cityTax / 52);
+                            
+                            return (
+                              <div key={`details-${i}`} className={`p-4 rounded-lg border ${offer.isWinner ? 'bg-yellow-50 border-[#ea384c]' : 'border-gray-200'}`}>
+                                <div className={`text-base font-bold pb-2 mb-3 border-b ${offer.isWinner ? 'text-[#ea384c] border-[#ea384c]' : 'border-gray-200'}`}>
+                                  CONTRACT {i+1}: {offer.state.toUpperCase()}
                                   {offer.isWinner && (
                                     <span className="ml-2 inline-flex items-center bg-yellow-100 text-black text-xs px-2 py-0.5 rounded">
-                                      <Trophy className="h-3 w-3 mr-1" /> BEST OFFER
+                                      <Trophy className="h-3 w-3 mr-1" /> WINNER
                                     </span>
                                   )}
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                        
-                        <div className="mb-6">
-                          <div className="text-lg font-bold mb-4 border-b border-gray-200 pb-2">DETAILED BREAKDOWN</div>
-                          
-                          <div className="space-y-6">
-                            {result.offers.map((offer, i) => {
-                              // Calculate tax breakdown
-                              const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
-                              const federalTax = Math.round(totalTaxAmount * 0.6);
-                              const stateTax = Math.round(totalTaxAmount * 0.35);
-                              const cityTax = Math.round(totalTaxAmount * 0.05);
-                              
-                              const weeklyFedTax = Math.round(federalTax / 52);
-                              const weeklyStateTax = Math.round(stateTax / 52);
-                              const weeklyCityTax = Math.round(cityTax / 52);
-                              
-                              return (
-                                <div key={`details-${i}`} className={`p-4 rounded-lg border ${offer.isWinner ? 'bg-yellow-50 border-[#ea384c]' : 'border-gray-200'}`}>
-                                  <div className={`text-base font-bold pb-2 mb-3 border-b ${offer.isWinner ? 'text-[#ea384c] border-[#ea384c]' : 'border-gray-200'}`}>
-                                    CONTRACT {i+1}: {offer.state.toUpperCase()}
-                                    {offer.isWinner && (
-                                      <span className="ml-2 inline-flex items-center bg-yellow-100 text-black text-xs px-2 py-0.5 rounded">
-                                        <Trophy className="h-3 w-3 mr-1" /> WINNER
-                                      </span>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                      <div className="mb-2"><span className="font-semibold">Weekly Salary:</span> ${offer.weeklySalary.toLocaleString()}</div>
-                                      <div className="mb-2"><span className="font-semibold">Weekly Taxable Income:</span> ${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</div>
-                                      <div className="mb-2"><span className="font-semibold">Weekly Tax-Free Stipends:</span> ${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</div>
-                                    </div>
-                                    <div>
-                                      <div className="mb-2"><span className="font-semibold">IRS Stipend Safe:</span> 
-                                        <Badge className={`ml-2 ${offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
-                                          {offer.irsStipendSafe}
-                                        </Badge>
-                                      </div>
-                                      <div className="mb-2"><span className="font-semibold">Cost of Living:</span> 
-                                        <Badge className={`ml-2 ${
-                                          offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                                          offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
-                                          "bg-red-100 text-red-800 border-red-200"
-                                        }`}>
-                                          {offer.costOfLiving}
-                                        </Badge>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="mb-4">
-                                    <div className="font-semibold mb-2">Cost Breakdown:</div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4">
-                                      <div>• Monthly Housing: ${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
-                                      <div>• Monthly Expenses: ${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="mb-4">
-                                    <div className="font-semibold mb-2">Taxes (Weekly):</div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 pl-4">
-                                      <div className="mb-1">• Federal: ${weeklyFedTax.toLocaleString()}</div>
-                                      <div className="mb-1">• State: ${weeklyStateTax.toLocaleString()}</div>
-                                      <div className="mb-1">• City: ${weeklyCityTax.toLocaleString()}</div>
-                                      <div className="font-semibold">• TOTAL: ${Math.round(weeklyFedTax + weeklyStateTax + weeklyCityTax).toLocaleString()}</div>
-                                    </div>
-                                  </div>
-                                  
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                   <div>
-                                    <div className="font-semibold mb-2">13-Week Contract Summary:</div>
-                                    <div className="pl-4">
-                                      <div className="mb-1">• Gross Income: ${(offer.weeklySalary * 13).toLocaleString()}</div>
-                                      <div className="mb-1">• Est. Taxes: -${Math.round(totalTaxAmount / 4).toLocaleString()}</div>
-                                      <div className="mb-1">• Est. Living Costs: -${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}</div>
-                                      <div className="font-bold text-lg">
-                                        • Estimated Savings: ${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}
-                                      </div>
+                                    <div className="mb-2"><span className="font-semibold">Weekly Salary:</span> ${offer.weeklySalary.toLocaleString()}</div>
+                                    <div className="mb-2"><span className="font-semibold">Weekly Taxable Income:</span> ${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</div>
+                                    <div className="mb-2"><span className="font-semibold">Weekly Tax-Free Stipends:</span> ${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</div>
+                                  </div>
+                                  <div>
+                                    <div className="mb-2"><span className="font-semibold">IRS Stipend Safe:</span> 
+                                      <Badge className={`ml-2 ${offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
+                                        {offer.irsStipendSafe}
+                                      </Badge>
+                                    </div>
+                                    <div className="mb-2"><span className="font-semibold">Cost of Living:</span> 
+                                      <Badge className={`ml-2 ${
+                                        offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                                        offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                                        "bg-red-100 text-red-800 border-red-200"
+                                      }`}>
+                                        {offer.costOfLiving}
+                                      </Badge>
                                     </div>
                                   </div>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                        
-                        <div className="text-xs text-gray-500 mt-6 text-right">
-                          Report generated: {result.reportDate}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.
+                                
+                                <div className="mb-4">
+                                  <div className="font-semibold mb-2">Cost Breakdown:</div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4">
+                                    <div>• Monthly Housing: ${offer.costOfLiving === "Low" ? "1,200" : offer.costOfLiving === "Medium" ? "1,800" : "2,600"}</div>
+                                    <div>• Monthly Expenses: ${offer.costOfLiving === "Low" ? "800" : offer.costOfLiving === "Medium" ? "1,200" : "1,800"}</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="mb-4">
+                                  <div className="font-semibold mb-2">Taxes (Weekly):</div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 pl-4">
+                                    <div className="mb-1">• Federal: ${weeklyFedTax.toLocaleString()}</div>
+                                    <div className="mb-1">• State: ${weeklyStateTax.toLocaleString()}</div>
+                                    <div className="mb-1">• City: ${weeklyCityTax.toLocaleString()}</div>
+                                    <div className="font-semibold">• TOTAL: ${Math.round(weeklyFedTax + weeklyStateTax + weeklyCityTax).toLocaleString()}</div>
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <div className="font-semibold mb-2">13-Week Contract Summary:</div>
+                                  <div className="pl-4">
+                                    <div className="mb-1">• Gross Income: ${(offer.weeklySalary * 13).toLocaleString()}</div>
+                                    <div className="mb-1">• Est. Taxes: -${Math.round(totalTaxAmount / 4).toLocaleString()}</div>
+                                    <div className="mb-1">• Est. Living Costs: -${offer.costOfLiving === "Low" ? "6,500" : offer.costOfLiving === "Medium" ? "9,750" : "14,300"}</div>
+                                    <div className="font-bold text-lg">
+                                      • Estimated Savings: ${Math.round((offer.estimatedTakeHome * 13) - (offer.costOfLiving === "Low" ? 6500 : offer.costOfLiving === "Medium" ? 9750 : 14300)).toLocaleString()}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
-                    ) : (
-                      // Fallback if no textReport is provided
-                      <div className="text-center text-gray-500">
-                        No detailed report available.
+                      
+                      <div className="text-xs text-gray-500 mt-6 text-right">
+                        Report generated: {result.reportDate}
                       </div>
-                    )}
+                      <div className="text-xs text-gray-500">
+                        DISCLAIMER: These are estimates based on available tax data. For your exact taxes, consult your tax professional.
+                      </div>
+                    </div>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
