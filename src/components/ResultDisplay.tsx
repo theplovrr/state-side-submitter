@@ -1,10 +1,16 @@
 
 import { useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy } from "lucide-react";
+import { Trophy, HelpCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
@@ -67,45 +73,66 @@ const ResultDisplay = ({ resultText }) => {
                   <TableHead className="text-black">Weekly Pay</TableHead>
                   <TableHead className="text-black">IRS Stipend Safe?</TableHead>
                   <TableHead className="text-black">Cost of Living</TableHead>
-                  <TableHead className="text-black">Est. Take-Home</TableHead>
+                  <TableHead className="text-black">
+                    <div className="flex items-center gap-1">
+                      Est. Taxes (Weekly)
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-gray-500" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[250px] text-xs">
+                            Includes estimated federal, state, and city taxes. See detailed report for full breakdown.
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {result.offers.map((offer, index) => (
-                  <TableRow 
-                    key={index} 
-                    className={`border-gray-200 ${offer.isWinner ? 'bg-yellow-50' : ''}`}
-                  >
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {offer.state}
-                        {offer.isWinner && (
-                          <Badge className="bg-yellow-500 text-black">
-                            <Trophy className="h-3 w-3 mr-1" /> Winner!
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
-                        {offer.irsStipendSafe}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={
-                        offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                        offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
-                        "bg-red-100 text-red-800 border-red-200"
-                      }>
-                        {offer.costOfLiving}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className={`font-bold ${offer.isWinner ? 'text-black' : ''}`}>
-                      ${offer.estimatedTakeHome.toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {result.offers.map((offer, index) => {
+                  // Calculate weekly taxes (annual taxes divided by 52)
+                  const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
+                  
+                  return (
+                    <TableRow 
+                      key={index} 
+                      className={`border-gray-200 ${offer.isWinner ? 'bg-yellow-50' : ''}`}
+                    >
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {offer.state}
+                          {offer.isWinner && (
+                            <Badge className="bg-yellow-500 text-black">
+                              <Trophy className="h-3 w-3 mr-1" /> Winner!
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
+                          {offer.irsStipendSafe}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={
+                          offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                          offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                          "bg-red-100 text-red-800 border-red-200"
+                        }>
+                          {offer.costOfLiving}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>${Math.round(weeklyTaxes).toLocaleString()}</TableCell>
+                      <TableCell className={`font-bold ${offer.isWinner ? 'text-black' : ''}`}>
+                        ${offer.estimatedTakeHome.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
             
