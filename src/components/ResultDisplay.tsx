@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Copy, Check, Trophy } from "lucide-react";
+import { Download, Copy, Check, Trophy, FilePdf } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +44,7 @@ const ResultDisplay = ({ resultText }) => {
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownloadPDF = async () => {
     if (!result) {
       toast({
         title: "Error generating report",
@@ -68,73 +68,40 @@ const ResultDisplay = ({ resultText }) => {
         format: "a4",
       });
 
-      // Set up PDF content
-      const winningOffer = result.offers.find(offer => offer.isWinner);
-      
-      // Add logo
-      const logoImg = document.querySelector("img[alt='Plovrr Logo']");
-      if (logoImg) {
-        const logoCanvas = await html2canvas(logoImg as HTMLElement);
-        const logoData = logoCanvas.toDataURL('image/png');
-        pdf.addImage(logoData, 'PNG', 20, 10, 40, 20);
+      // Get the report element to capture
+      const reportElement = reportRef.current;
+      if (!reportElement) {
+        throw new Error("Report element not found");
       }
+
+      // Convert the report element to canvas
+      const canvas = await html2canvas(reportElement, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#FFFFFF",
+      });
+
+      const imgData = canvas.toDataURL('image/png');
       
-      // Add title and date
-      pdf.setFontSize(20);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text("Contract Analysis Report", 20, 40);
+      // Calculate dimensions to fit on PDF
+      const imgWidth = 210; // A4 width in mm (210mm)
+      const imgHeight = canvas.height * imgWidth / canvas.width;
       
-      if (winningOffer) {
-        pdf.setFontSize(16);
-        pdf.text(`Your Top Contract: ${winningOffer.state}`, 20, 50);
-      }
+      // Add the image to the PDF
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Report generated: ${result.reportDate}`, 20, 60);
-      
-      // Add table headers
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text("Destination", 20, 70);
-      pdf.text("Weekly Pay", 70, 70);
-      pdf.text("IRS Stipend", 110, 70);
-      pdf.text("Cost of Living", 150, 70);
-      pdf.text("Est. Take-Home", 190, 70);
-      
-      // Add table divider
-      pdf.setDrawColor(200, 200, 200);
-      pdf.line(20, 72, 190, 72);
-      
-      // Add table rows
-      let yPosition = 80;
-      result.offers.forEach((offer, index) => {
-        // Highlight winner row with light yellow background
-        if (offer.isWinner) {
-          pdf.setFillColor(255, 245, 215);
-          pdf.rect(20, yPosition - 5, 170, 10, 'F');
-        }
-        
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(offer.state + (offer.isWinner ? " 🏆" : ""), 20, yPosition);
-        pdf.text(`$${offer.weeklySalary.toLocaleString()}`, 70, yPosition);
-        pdf.text(offer.irsStipendSafe, 110, yPosition);
-        pdf.text(offer.costOfLiving, 150, yPosition);
-        
-        // Bold the take-home pay amount for winner
-        if (offer.isWinner) {
-          pdf.setFont(undefined, 'bold');
-        }
-        pdf.text(`$${offer.estimatedTakeHome.toLocaleString()}`, 190, yPosition);
-        pdf.setFont(undefined, 'normal');
-        
-        yPosition += 12;
+      // Add generation date at the bottom
+      const today = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
       
-      // Add footer
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
-      pdf.text("Provided by Plovrr - Travel Nurse Take-Home Pay & Tax Estimator", 20, 270);
+      pdf.text(`Report generated: ${today}`, 20, 285);
+      pdf.text("Provided by Plovrr - Travel Nurse Take-Home Pay & Tax Estimator", 20, 290);
       
       // Save the PDF
       pdf.save("travel-contract-analysis.pdf");
@@ -201,11 +168,11 @@ const ResultDisplay = ({ resultText }) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={handleDownload}
+                onClick={handleDownloadPDF}
                 className="border-gray-200 bg-white hover:bg-gray-50 text-black"
               >
-                <Download size={16} />
-                <span className="ml-2">Download Detailed Report</span>
+                <FilePdf size={16} />
+                <span className="ml-2">Download Detailed Report (PDF)</span>
               </Button>
             </div>
           </CardHeader>
@@ -282,15 +249,6 @@ const ResultDisplay = ({ resultText }) => {
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
             <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleDownload}
-            className="border-gray-200 bg-white hover:bg-gray-50 text-black"
-          >
-            <Download size={16} />
-            <span className="ml-2">Download Detailed Report</span>
           </Button>
         </div>
       </CardHeader>
