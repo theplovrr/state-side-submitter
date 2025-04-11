@@ -32,6 +32,19 @@ export const compareOffers = (
 ): ComparisonResult => {
   const analysedOffers: OfferAnalysis[] = [];
   
+  // List of states with high cost of living
+  const highCostStates = [
+    "California", "New York", "Hawaii", "Massachusetts", "Alaska", 
+    "Connecticut", "New Jersey", "Washington", "Colorado", "Oregon"
+  ];
+  
+  // List of states with medium cost of living
+  const mediumCostStates = [
+    "Illinois", "Rhode Island", "Maryland", "Vermont", "New Hampshire", 
+    "Delaware", "Virginia", "Minnesota", "Nevada", "Florida", "Maine", 
+    "Arizona", "Pennsylvania"
+  ];
+  
   // Process each offer
   offers.forEach(offer => {
     if (offer.state && offer.salary) {
@@ -41,7 +54,15 @@ export const compareOffers = (
       // Simulate tax estimates (would be calculated for real)
       const taxRate = Math.random() * 0.1 + 0.2; // Random 20-30% tax rate for demo
       const totalTaxes = Math.round(annualSalary * taxRate);
-      const estimatedTakeHome = Math.round(annualSalary * (1 - taxRate));
+      const estimatedTakeHome = Math.round(weeklySalary * (1 - taxRate));
+      
+      // Determine cost of living based on state
+      let costOfLiving = "Low";
+      if (highCostStates.includes(offer.state)) {
+        costOfLiving = "High";
+      } else if (mediumCostStates.includes(offer.state)) {
+        costOfLiving = "Medium";
+      }
       
       analysedOffers.push({
         state: offer.state,
@@ -50,7 +71,7 @@ export const compareOffers = (
         homeStateTaxImpact: homeState === offer.state ? "No impact" : "Tax implications may apply",
         totalTaxes: `$${totalTaxes.toLocaleString()}`,
         irsStipendSafe: homeState === offer.state ? "No" : "Yes",
-        costOfLiving: ["High", "Medium", "Low"][Math.floor(Math.random() * 3)],
+        costOfLiving: costOfLiving,
         estimatedTakeHome: estimatedTakeHome
       });
     }

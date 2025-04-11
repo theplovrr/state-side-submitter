@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
@@ -297,7 +296,7 @@ const Index = () => {
                 disabled={isAnalyzing || !hasValidOffer()}
                 className="bg-white hover:bg-gray-50 text-black border border-black py-2 px-10 rounded-md text-base font-medium"
               >
-                Compare Destinations
+                Compare Now
               </Button>
             </div>
           </>
