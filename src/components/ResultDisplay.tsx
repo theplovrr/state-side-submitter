@@ -1,7 +1,7 @@
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Trophy, HelpCircle, ChevronDown, ChevronUp, DollarSign, Home, Calculator } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +11,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useState } from "react";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
   const textRef = useRef(null);
   const [expandedOffers, setExpandedOffers] = useState([]);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Parse the result text into structured data
   const parseResult = () => {
@@ -102,7 +110,7 @@ const ResultDisplay = ({ resultText }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <Table className="border-collapse">
+            <Table className="border-collapse w-full">
               <TableHeader className="bg-gray-50">
                 <TableRow className="border-gray-200">
                   <TableHead className="text-black">Destination</TableHead>
@@ -224,6 +232,153 @@ const ResultDisplay = ({ resultText }) => {
                 })}
               </TableBody>
             </Table>
+            
+            {/* Collapsible detailed report section */}
+            <div className="mt-6">
+              <Collapsible
+                open={isDetailsOpen}
+                onOpenChange={setIsDetailsOpen}
+                className="w-full"
+              >
+                <div className="flex justify-center mb-4">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      {isDetailsOpen ? (
+                        <>Hide Detailed Breakdown {<ChevronUp className="h-4 w-4" />}</>
+                      ) : (
+                        <>Show Detailed Breakdown {<ChevronDown className="h-4 w-4" />}</>
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+                
+                <CollapsibleContent className="space-y-6 pt-2 animate-accordion-down">
+                  {result.offers.map((offer, index) => (
+                    <div 
+                      key={`detailed-offer-${index}`} 
+                      className={`p-5 rounded-lg border border-gray-200 shadow-sm ${offer.isWinner ? 'bg-yellow-50' : 'bg-white'}`}
+                    >
+                      <h3 className="text-xl font-bold mb-4 text-center">{offer.state} Detailed Report</h3>
+                      
+                      {/* Income Breakdown Section */}
+                      <div className={`mb-5 ${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
+                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
+                          <DollarSign className="h-5 w-5 text-green-600" />
+                          Income Breakdown
+                        </h4>
+                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
+                          <table className="w-full text-sm">
+                            <tbody>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Weekly Salary:</td>
+                                <td className="py-2 font-medium text-right">${offer.weeklySalary.toLocaleString()}</td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Weekly Taxable Income:</td>
+                                <td className="py-2 font-medium text-right">${Math.round(offer.weeklySalary * 0.6).toLocaleString()}</td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Weekly Tax-Free Stipends:</td>
+                                <td className="py-2 font-medium text-right">${Math.round(offer.weeklySalary * 0.4).toLocaleString()}</td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Est. Weekly Taxes:</td>
+                                <td className="py-2 font-medium text-right">-${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52).toLocaleString()}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 text-gray-700 font-semibold">Estimated Weekly Take-Home:</td>
+                                <td className="py-2 font-bold text-right text-green-700">${offer.estimatedTakeHome.toLocaleString()}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      
+                      {/* Cost of Living Section */}
+                      <div className={`mb-5 ${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
+                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
+                          <Home className="h-5 w-5 text-blue-600" />
+                          Cost of Living Estimate
+                        </h4>
+                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
+                          <table className="w-full text-sm">
+                            <tbody>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Classification:</td>
+                                <td className="py-2 font-medium text-right">
+                                  <Badge className={
+                                    offer.costOfLiving === "Low" ? "bg-green-100 text-green-800" : 
+                                    offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800" : 
+                                    "bg-red-100 text-red-800"
+                                  }>
+                                    {offer.costOfLiving}
+                                  </Badge>
+                                </td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">Est. Monthly Housing:</td>
+                                <td className="py-2 font-medium text-right">
+                                  ${offer.costOfLiving === "Low" ? "1,200" : 
+                                    offer.costOfLiving === "Medium" ? "1,800" : 
+                                    "2,600"}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 text-gray-600">Est. Monthly Expenses:</td>
+                                <td className="py-2 font-medium text-right">
+                                  ${offer.costOfLiving === "Low" ? "800" : 
+                                    offer.costOfLiving === "Medium" ? "1,200" : 
+                                    "1,800"}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      
+                      {/* 3-Month Contract Summary */}
+                      <div className={`${isMobile ? 'p-3' : 'p-4'} bg-gray-50 rounded-md border border-gray-200`}>
+                        <h4 className="font-medium text-md mb-3 flex items-center gap-2">
+                          <Calculator className="h-5 w-5 text-purple-600" />
+                          3-Month Contract Summary
+                        </h4>
+                        <div className={`overflow-x-auto ${isMobile ? 'pb-4' : ''}`}>
+                          <table className="w-full text-sm">
+                            <tbody>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">13-Week Gross Income:</td>
+                                <td className="py-2 font-medium text-right">${(offer.weeklySalary * 13).toLocaleString()}</td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">13-Week Est. Taxes:</td>
+                                <td className="py-2 font-medium text-right">-${Math.round(parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 4).toLocaleString()}</td>
+                              </tr>
+                              <tr className="border-b border-gray-200">
+                                <td className="py-2 text-gray-600">13-Week Est. Living Costs:</td>
+                                <td className="py-2 font-medium text-right">
+                                  -${offer.costOfLiving === "Low" ? "6,500" : 
+                                     offer.costOfLiving === "Medium" ? "9,750" : 
+                                     "14,300"}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 text-gray-700 font-semibold">Estimated Savings (13 Weeks):</td>
+                                <td className="py-2 font-bold text-right text-green-700 bg-green-50 px-2 rounded">
+                                  ${Math.round((offer.estimatedTakeHome * 13) - 
+                                    (offer.costOfLiving === "Low" ? 6500 : 
+                                     offer.costOfLiving === "Medium" ? 9750 : 
+                                     14300)).toLocaleString()}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
             
             <div className="mt-4 text-xs text-gray-500 flex flex-col gap-2">
               <div className="text-right">
