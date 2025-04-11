@@ -2,18 +2,15 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Copy, Check, Trophy, FilePdf } from "lucide-react";
+import { Download, Copy, Check, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const textRef = useRef(null);
-  const reportRef = useRef(null);
 
   // Parse the result text into structured data
   const parseResult = () => {
@@ -44,83 +41,6 @@ const ResultDisplay = ({ resultText }) => {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (!result) {
-      toast({
-        title: "Error generating report",
-        description: "Could not generate PDF report from the data",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Show a toast to indicate we're generating the PDF
-    toast({
-      title: "Generating your PDF report...",
-      duration: 2000,
-    });
-
-    try {
-      // Create a new PDF document
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      // Get the report element to capture
-      const reportElement = reportRef.current;
-      if (!reportElement) {
-        throw new Error("Report element not found");
-      }
-
-      // Convert the report element to canvas
-      const canvas = await html2canvas(reportElement, {
-        scale: 2, // Higher scale for better quality
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#FFFFFF",
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Calculate dimensions to fit on PDF
-      const imgWidth = 210; // A4 width in mm (210mm)
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      
-      // Add the image to the PDF
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-      // Add generation date at the bottom
-      const today = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-      
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Report generated: ${today}`, 20, 285);
-      pdf.text("Provided by Plovrr - Travel Nurse Take-Home Pay & Tax Estimator", 20, 290);
-      
-      // Save the PDF
-      pdf.save("travel-contract-analysis.pdf");
-      
-      toast({
-        title: "Contract analysis report downloaded",
-        description: "Your PDF report has been generated successfully",
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error("PDF generation error:", error);
-      toast({
-        title: "Error generating report",
-        description: "There was an error creating your PDF report",
-        variant: "destructive",
-      });
-    }
-  };
-
   // Get the winning offer (if any)
   const getWinningOffer = () => {
     if (!result || !result.offers || result.offers.length === 0) return null;
@@ -147,7 +67,7 @@ const ResultDisplay = ({ resultText }) => {
           </div>
         )}
 
-        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4" ref={reportRef}>
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
           <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
             <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
@@ -164,15 +84,6 @@ const ResultDisplay = ({ resultText }) => {
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
                 <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleDownloadPDF}
-                className="border-gray-200 bg-white hover:bg-gray-50 text-black"
-              >
-                <FilePdf size={16} />
-                <span className="ml-2">Download Detailed Report (PDF)</span>
               </Button>
             </div>
           </CardHeader>
