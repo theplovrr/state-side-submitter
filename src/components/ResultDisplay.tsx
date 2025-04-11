@@ -1,7 +1,7 @@
 
 import { useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, HelpCircle } from "lucide-react";
+import { Trophy, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +11,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
   const textRef = useRef(null);
+  const [expandedOffers, setExpandedOffers] = useState([]);
 
   // Parse the result text into structured data
   const parseResult = () => {
@@ -38,6 +40,40 @@ const ResultDisplay = ({ resultText }) => {
   };
 
   const winningOffer = getWinningOffer();
+
+  // Toggle expanded state for an offer
+  const toggleExpand = (index) => {
+    setExpandedOffers(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+
+  // Calculate tax breakdown (simplified for demo)
+  const calculateTaxBreakdown = (offer) => {
+    const totalTaxAmount = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, ""));
+    
+    // Calculate breakdown (simplified for demo)
+    const federalTax = Math.round(totalTaxAmount * 0.6); // 60% federal
+    const stateTax = Math.round(totalTaxAmount * 0.35); // 35% state
+    const cityTax = Math.round(totalTaxAmount * 0.05); // 5% city
+    
+    // Weekly amounts
+    const weeklyFederalTax = Math.round(federalTax / 52);
+    const weeklyStateTax = Math.round(stateTax / 52);
+    const weeklyCityTax = Math.round(cityTax / 52);
+    const weeklyTotalTax = weeklyFederalTax + weeklyStateTax + weeklyCityTax;
+    
+    return {
+      weeklyFederalTax,
+      weeklyStateTax,
+      weeklyCityTax,
+      weeklyTotalTax
+    };
+  };
 
   // Render a table display if we have structured data
   if (result) {
@@ -89,55 +125,113 @@ const ResultDisplay = ({ resultText }) => {
                     </div>
                   </TableHead>
                   <TableHead className="text-black">Est. Take-Home (Weekly)</TableHead>
+                  <TableHead className="text-black"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {result.offers.map((offer, index) => {
                   // Calculate weekly taxes (annual taxes divided by 52)
                   const weeklyTaxes = parseInt(offer.totalTaxes.replace(/[^0-9.-]+/g, "")) / 52;
+                  const isExpanded = expandedOffers.includes(index);
                   
                   return (
-                    <TableRow 
-                      key={index} 
-                      className={`border-gray-200 ${offer.isWinner ? 'bg-yellow-50' : ''}`}
-                    >
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {offer.state}
-                          {offer.isWinner && (
-                            <Badge className="bg-yellow-500 text-black">
-                              <Trophy className="h-3 w-3 mr-1" /> Winner!
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
-                          {offer.irsStipendSafe}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={
-                          offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
-                          offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
-                          "bg-red-100 text-red-800 border-red-200"
-                        }>
-                          {offer.costOfLiving}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>${Math.round(weeklyTaxes).toLocaleString()}</TableCell>
-                      <TableCell className={`font-bold ${offer.isWinner ? 'text-black' : ''}`}>
-                        ${offer.estimatedTakeHome.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
+                    <>
+                      <TableRow 
+                        key={`offer-${index}`} 
+                        className={`border-gray-200 ${offer.isWinner ? 'bg-yellow-50' : ''}`}
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {offer.state}
+                            {offer.isWinner && (
+                              <Badge className="bg-yellow-500 text-black">
+                                <Trophy className="h-3 w-3 mr-1" /> Winner!
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>${offer.weeklySalary.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Badge className={offer.irsStipendSafe === "Yes" ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
+                            {offer.irsStipendSafe}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={
+                            offer.costOfLiving === "Low" ? "bg-green-100 text-green-800 border-green-200" : 
+                            offer.costOfLiving === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : 
+                            "bg-red-100 text-red-800 border-red-200"
+                          }>
+                            {offer.costOfLiving}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>${Math.round(weeklyTaxes).toLocaleString()}</TableCell>
+                        <TableCell className={`font-bold ${offer.isWinner ? 'text-black' : ''}`}>
+                          ${offer.estimatedTakeHome.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <button 
+                            onClick={() => toggleExpand(index)}
+                            className="text-gray-500 hover:text-gray-800 transition-colors"
+                            aria-label={isExpanded ? "Hide details" : "Show details"}
+                          >
+                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                      
+                      {/* Detailed breakdown row */}
+                      {isExpanded && (
+                        <TableRow key={`details-${index}`} className="bg-gray-50">
+                          <TableCell colSpan={7} className="p-0">
+                            <div className="p-4 border-t border-gray-200">
+                              <h4 className="font-medium text-gray-900 mb-3">Detailed Breakdown: {offer.state}</h4>
+                              
+                              <div className="bg-white p-4 rounded-md border border-gray-200 space-y-3">
+                                {/* Calculate tax breakdown */}
+                                {(() => {
+                                  const { weeklyFederalTax, weeklyStateTax, weeklyCityTax, weeklyTotalTax } = 
+                                    calculateTaxBreakdown(offer);
+                                  
+                                  return (
+                                    <>
+                                      <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div className="text-gray-600">Federal Tax (Weekly):</div>
+                                        <div className="font-medium text-right">${weeklyFederalTax.toLocaleString()}</div>
+                                        
+                                        <div className="text-gray-600">State Tax (Weekly):</div>
+                                        <div className="font-medium text-right">${weeklyStateTax.toLocaleString()}</div>
+                                        
+                                        <div className="text-gray-600">City Tax (Weekly):</div>
+                                        <div className="font-medium text-right">${weeklyCityTax.toLocaleString()}</div>
+                                        
+                                        <div className="text-gray-600 font-medium">Total Estimated Taxes (Weekly):</div>
+                                        <div className="font-bold text-right">${weeklyTotalTax.toLocaleString()}</div>
+                                        
+                                        <div className="text-gray-600 pt-2 border-t border-gray-200 font-medium">Weekly Take-Home Pay:</div>
+                                        <div className="font-bold text-right pt-2 border-t border-gray-200">${offer.estimatedTakeHome.toLocaleString()}</div>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
                   );
                 })}
               </TableBody>
             </Table>
             
-            <div className="text-xs text-gray-500 mt-4 text-right">
-              Report generated: {result.reportDate}
+            <div className="mt-4 text-xs text-gray-500 flex flex-col gap-2">
+              <div className="text-right">
+                Report generated: {result.reportDate}
+              </div>
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded text-center">
+                These are estimates based on available tax data. For your exact taxes, consult your tax professional.
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -6,7 +6,7 @@ import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-import { X, FileDown } from "lucide-react";
+import { X } from "lucide-react";
 import ComparisonToggle from "@/components/ComparisonToggle";
 
 const states = [
@@ -183,15 +183,6 @@ const Index = () => {
       : "Type to search U.S. states...";
   };
 
-  // This function is just a placeholder for now - will be implemented in the next step
-  const handleDownloadReport = () => {
-    toast({
-      title: "Coming soon!",
-      description: "The download functionality will be implemented in the next step.",
-      duration: 3000,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -324,22 +315,13 @@ const Index = () => {
             
             <ResultDisplay resultText={resultText} />
             
-            <div className="flex justify-center mt-6 gap-4">
+            <div className="flex justify-center mt-6">
               <Button 
                 onClick={handleReset}
                 variant="outline"
                 className="border border-gray-300 hover:bg-gray-50 text-black"
               >
                 Start New Comparison
-              </Button>
-              
-              <Button 
-                onClick={handleDownloadReport}
-                variant="outline"
-                className="border border-gray-300 hover:bg-gray-50 text-black"
-              >
-                <FileDown className="mr-2 h-4 w-4" />
-                Download Detailed Report
               </Button>
             </div>
           </>
