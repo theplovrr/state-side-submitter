@@ -1,15 +1,13 @@
 
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Copy, Check, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
 const ResultDisplay = ({ resultText }) => {
   const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
   const textRef = useRef(null);
 
   // Parse the result text into structured data
@@ -25,21 +23,6 @@ const ResultDisplay = ({ resultText }) => {
   };
 
   const result = parseResult();
-
-  const handleCopy = () => {
-    if (textRef.current) {
-      navigator.clipboard.writeText(resultText);
-      setCopied(true);
-      toast({
-        title: "Analysis copied to clipboard",
-        duration: 2000,
-      });
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    }
-  };
 
   // Get the winning offer (if any)
   const getWinningOffer = () => {
@@ -67,7 +50,7 @@ const ResultDisplay = ({ resultText }) => {
           </div>
         )}
 
-        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
+        <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4" id="report-content">
           <CardHeader className="bg-white border-b border-gray-200 p-4 flex flex-row justify-between items-center">
             <CardTitle className="text-xl font-bold text-black">
               {result.isSingleDestination 
@@ -75,17 +58,6 @@ const ResultDisplay = ({ resultText }) => {
                 : "Contract Comparison"
               }
             </CardTitle>
-            <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleCopy}
-                className="border-gray-200 bg-white hover:bg-gray-50 text-black"
-              >
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
-              </Button>
-            </div>
           </CardHeader>
           <CardContent className="p-4">
             <Table className="border-collapse">
@@ -151,17 +123,6 @@ const ResultDisplay = ({ resultText }) => {
     <Card className="w-full shadow-sm bg-white text-black border border-gray-200 rounded-xl mb-4">
       <CardHeader className="bg-white border-b border-gray-200 flex flex-row justify-between items-center p-4">
         <CardTitle className="text-xl font-bold text-black">Contract Analysis</CardTitle>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleCopy}
-            className="border-gray-200 bg-white hover:bg-gray-50 text-black"
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            <span className="ml-2">{copied ? "Copied" : "Copy"}</span>
-          </Button>
-        </div>
       </CardHeader>
       <CardContent className="p-4">
         <div 

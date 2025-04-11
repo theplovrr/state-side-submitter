@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { compareOffers } from "@/utils/compareOffers";
 import JobOfferForm from "@/components/JobOfferForm";
@@ -6,8 +6,10 @@ import ResultDisplay from "@/components/ResultDisplay";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-import { X } from "lucide-react";
+import { X, FileDown } from "lucide-react";
 import ComparisonToggle from "@/components/ComparisonToggle";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
@@ -48,6 +50,7 @@ const Index = () => {
   const [userEmail, setUserEmail] = useState("");
   const [visibleOffers, setVisibleOffers] = useState(1); // Track number of visible offers
   const [compareMode, setCompareMode] = useState("states"); // "states" or "cities"
+  const [isExporting, setIsExporting] = useState(false);
   
   const form = useForm();
   
@@ -183,6 +186,76 @@ const Index = () => {
       : "Type to search U.S. states...";
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      setIsExporting(true);
+      toast({
+        title: "Generating your PDF report...",
+        duration: 2000,
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      pdf.setFontSize(18);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("Travel Nurse Contract Comparison Report", 20, 20);
+      
+      const img = new Image();
+      img.src = "/lovable-uploads/90d7f47e-c8a6-4248-ab41-5ef50eb89b7c.png";
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      
+      pdf.addImage(img, 'PNG', 20, 25, 40, 15);
+      
+      const reportElement = document.getElementById('report-content');
+      if (!reportElement) {
+        throw new Error("Report element not found");
+      }
+      
+      const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#FFFFFF"
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 10, 45, pdfWidth - 20, pdfHeight);
+      
+      const today = new Date().toLocaleDateString();
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Report generated on ${today}`, 20, 285);
+      pdf.text("Provided by Plovrr - Travel Nurse Take-Home Pay & Tax Estimator", 20, 290);
+      
+      pdf.save("travel-nurse-contract-report.pdf");
+      
+      toast({
+        title: "PDF Report Downloaded",
+        description: "Your detailed contract report has been downloaded",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast({
+        title: "Error generating PDF",
+        description: "There was an error creating your PDF report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto py-8 px-4 max-w-4xl">
@@ -315,13 +388,23 @@ const Index = () => {
             
             <ResultDisplay resultText={resultText} />
             
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-6 gap-4">
               <Button 
                 onClick={handleReset}
                 variant="outline"
                 className="border border-gray-300 hover:bg-gray-50 text-black"
               >
                 Start New Comparison
+              </Button>
+              
+              <Button 
+                onClick={handleDownloadPDF}
+                variant="outline"
+                className="border border-gray-300 hover:bg-gray-50 text-black"
+                disabled={isExporting}
+              >
+                <FileDown className="mr-2 h-4 w-4" />
+                {isExporting ? "Generating PDF..." : "Download Detailed Report"}
               </Button>
             </div>
           </>
