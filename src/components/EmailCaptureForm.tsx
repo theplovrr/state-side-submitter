@@ -1,32 +1,49 @@
-
-import { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Loader } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
-type EmailCaptureFormProps = {
+type FormValues = z.infer<typeof formSchema>;
+
+type Props = {
   onSubmit: (email: string) => void;
   isLoading: boolean;
 };
 
-const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+const EmailCaptureForm = ({ onSubmit, isLoading }: Props) => {
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values.email);
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      await fetch("https://formspree.io/f/xnnddewg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.email }),
+      });
+    } catch (err) {
+      console.error("Formspree error:", err);
+    }
+
+    onSubmit(values.email); // trigger estimator results
   };
 
   return (
@@ -38,20 +55,14 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
       </div>
 
       <div className="flex justify-center items-center mb-6 space-x-6">
-        <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
-          <img 
-            src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png" 
-            alt="Plovrr mascot with suitcase" 
-            className="w-full h-auto object-contain"
-          />
-        </div>
-        <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
-          <img 
-            src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png" 
-            alt="Plovrr mascot with luggage" 
-            className="w-full h-auto object-contain"
-          />
-        </div>
+        <img
+          src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png"
+          className="w-24 h-24"
+        />
+        <img
+          src="/lovable-uploads/1f8a6d9e-656c-4254-b141-82d8edf42f09.png"
+          className="w-24 h-24"
+        />
       </div>
 
       <div className="text-center mb-5">
@@ -69,10 +80,10 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
               <FormItem>
                 <FormLabel className="text-black">Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="you@example.com" 
-                    className="border-[#E5E7EB] bg-white text-black placeholder:text-[#9CA3AF] focus:border-gray-400 focus:ring-gray-400" 
-                    {...field} 
+                  <Input
+                    placeholder="you@example.com"
+                    className="border-[#E5E7EB] bg-white text-black"
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -81,10 +92,10 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
           />
 
           <div className="pt-2 mb-10">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading}
-              className="w-full bg-white hover:bg-gray-50 text-black border border-gray-200 font-medium py-3 px-4 h-12 rounded-md transition-colors"
+              className="w-full bg-white text-black border border-gray-200 h-12"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
