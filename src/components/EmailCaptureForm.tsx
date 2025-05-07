@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -19,7 +21,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const EmailCaptureForm = () => {
+const EmailCaptureForm = ({ onSubmit }) => {
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,7 +41,9 @@ const EmailCaptureForm = () => {
         body: JSON.stringify({ email: values.email }),
       });
 
-      alert("Thanks! You're in — check your inbox.");
+      setHasSubmitted(true);
+      onSubmit(values.email);
+      form.reset();
     } catch (err) {
       console.error(err);
       alert("Oops — something went wrong. Please try again.");
@@ -45,6 +51,20 @@ const EmailCaptureForm = () => {
   };
 
   const isLoading = form.formState.isSubmitting;
+
+  if (hasSubmitted) {
+    return (
+      <div id="results" className="text-center animate-fade-in">
+        <h2 className="text-2xl font-bold mb-4">Processing Your Results</h2>
+        <p className="text-gray-600 mb-4">
+          Thank you! We're calculating your personalized tax estimates now.
+        </p>
+        <div className="flex justify-center">
+          <Loader className="animate-spin h-10 w-10 text-gray-500" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto">
@@ -120,4 +140,3 @@ const EmailCaptureForm = () => {
 };
 
 export default EmailCaptureForm;
-
