@@ -1,33 +1,50 @@
-
-import { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Loader } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
-type EmailCaptureFormProps = {
-  onSubmit: (email: string) => void;
-  isLoading: boolean;
-};
+type FormValues = z.infer<typeof formSchema>;
 
-const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+const EmailCaptureForm = () => {
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values.email);
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      await fetch("https://formspree.io/f/xnnddewg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: values.email }),
+      });
+
+      alert("Thanks! You're in — check your inbox.");
+    } catch (err) {
+      console.error(err);
+      alert("Oops — something went wrong. Please try again.");
+    }
   };
+
+  const isLoading = form.formState.isSubmitting;
 
   return (
     <div className="max-w-md mx-auto">
@@ -39,16 +56,16 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
 
       <div className="flex justify-center items-center mb-6 space-x-6">
         <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
-          <img 
-            src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png" 
-            alt="Plovrr mascot with suitcase" 
+          <img
+            src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png"
+            alt="Plovrr mascot with suitcase"
             className="w-full h-auto object-contain"
           />
         </div>
         <div className="w-24 h-24 pointer-events-none animate-fade-in hover:animate-pulse">
-          <img 
-            src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png" 
-            alt="Plovrr mascot with luggage" 
+          <img
+            src="/lovable-uploads/1f8a6d9f-656c-4254-b141-82d8edf42f09.png"
+            alt="Plovrr mascot with luggage"
             className="w-full h-auto object-contain"
           />
         </div>
@@ -69,10 +86,10 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
               <FormItem>
                 <FormLabel className="text-black">Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="you@example.com" 
-                    className="border-[#E5E7EB] bg-white text-black placeholder:text-[#9CA3AF] focus:border-gray-400 focus:ring-gray-400" 
-                    {...field} 
+                  <Input
+                    placeholder="you@example.com"
+                    className="border-[#E5E7EB] bg-white text-black placeholder:text-[#9CA3AF] focus:border-gray-400 focus:ring-gray-400"
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -81,8 +98,8 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
           />
 
           <div className="pt-2 mb-10">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading}
               className="w-full bg-white hover:bg-gray-50 text-black border border-gray-200 font-medium py-3 px-4 h-12 rounded-md transition-colors"
             >
@@ -103,3 +120,4 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: EmailCaptureFormProps) => {
 };
 
 export default EmailCaptureForm;
+
