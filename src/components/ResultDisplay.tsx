@@ -274,7 +274,7 @@ const ResultDisplay = ({ resultText }) => {
               </TableBody>
             </Table>
             <div className="p-4 text-xs text-gray-500">
-              * Estimates based on available tax data.
+              *Estimates are for informational purposes only and don't constitute tax advice. Your actual numbers may vary based on your individual situation.
             </div>
             
             <div className="flex justify-center gap-4 p-4 border-t border-gray-200">
