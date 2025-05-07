@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -57,10 +59,12 @@ const EmailCaptureForm = ({ onSubmit, isLoading }: Props) => {
       <div className="flex justify-center items-center mb-6 space-x-6">
         <img
           src="/lovable-uploads/631e3d9e-b7db-4e1b-8772-1bfb4d3db5ce.png"
+          alt="Travel nurse illustration"
           className="w-24 h-24"
         />
         <img
           src="/lovable-uploads/1f8a6d9e-656c-4254-b141-82d8edf42f09.png"
+          alt="Calculator illustration" 
           className="w-24 h-24"
         />
       </div>

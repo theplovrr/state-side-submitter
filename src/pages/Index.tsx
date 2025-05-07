@@ -331,7 +331,7 @@ const Index = () => {
             </div>
             <EmailCaptureForm 
               onSubmit={handleEmailSubmit} 
-              isLoading={isAnalyzing} 
+              isLoading={isAnalyzing}
             />
           </div>
         )}
